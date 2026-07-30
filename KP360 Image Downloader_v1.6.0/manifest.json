@@ -1,0 +1,33 @@
+{
+	"manifest_version": 3,
+	"name": "KP360 Image Downloader",
+	"version": "1.6.0",
+	"description": "Downloads generated image URLs from the KP360 image tools as one ZIP with forced .JPG filenames. Created by Justin Perez All Rights Reserved. Developed: Doms Doms_v1",   
+	"permissions": [
+		"downloads"
+	],
+	"host_permissions": [
+		"https://ecommerce-assets.ext.gm.com/*",
+		"https://cld.partsimg.com/*",
+		"https://images.carid.com/*",
+		"https://*.carlights360.com/*"
+	],
+	"content_scripts": [
+		{
+			"matches": [
+				"file:///*",
+				"http://localhost/*",
+				"http://127.0.0.1/*",
+				"https://www.karparts360.com/*",
+				"https://karparts360.com/*"
+			],
+			"js": [
+				"content.js"
+			],
+			"run_at": "document_idle"
+		}
+	],
+	"background": {
+		"service_worker": "background.js"
+	}
+}
