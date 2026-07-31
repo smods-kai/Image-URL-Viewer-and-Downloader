@@ -1,0 +1,6635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Image URL Viewer and Downloader</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+        h1,
+        h1 + p {
+            text-align: center;
+        }
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Montserrat',sans-serif;
+    background:
+        linear-gradient(
+            135deg,
+            #050505 0%,
+            #111111 40%,
+            #1b1b1b 100%
+        );
+    color:white;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* HEADER */
+
+.header{
+    position:relative;
+    overflow:hidden;
+
+    padding:40px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #050505,
+            #151515,
+            #1e1e1e
+        );
+
+    border-bottom:3px solid #de9b14;
+}
+
+.header::before{
+    content:'';
+
+    position:absolute;
+
+    top:0;
+    right:-150px;
+
+    width:420px;
+    height:100%;
+
+    background:#de9b14;
+
+    transform:skewX(-25deg);
+
+    opacity:.9;
+}
+
+.header::after{
+    content:'';
+
+    position:absolute;
+
+    top:0;
+    right:120px;
+
+    width:120px;
+    height:100%;
+
+    background:rgba(0,0,0,.4);
+
+    transform:skewX(-25deg);
+}
+
+.logo{
+    height:22px;
+    position:relative;
+    z-index:2;
+}
+
+.page-title{
+    position:relative;
+    z-index:2;
+
+    margin-top:25px;
+
+    font-size:62px;
+    font-weight:800;
+
+    line-height:1;
+
+    letter-spacing:4px;
+
+    text-transform:uppercase;
+}
+
+.page-sub{
+    position:relative;
+    z-index:2;
+
+    margin-top:12px;
+
+    font-size:14px;
+
+    color:#d8d8d8;
+
+    letter-spacing:4px;
+
+    text-transform:uppercase;
+}
+
+/* MAIN PANEL */
+
+.main-panel{
+    padding:24px;
+}
+
+/* CONTROL PANEL */
+
+.control-panel{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.03),
+            rgba(255,255,255,.01)
+        );
+
+    border:1px solid rgba(222,155,20,.25);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    margin-bottom:24px;
+
+    backdrop-filter:blur(12px);
+
+    box-shadow:
+        0 0 40px rgba(0,0,0,.45);
+}
+
+/* LABELS */
+
+h3{
+    color:#de9b14;
+    margin-bottom:12px;
+    letter-spacing:1px;
+    font-size:18px;
+}
+
+/* INPUTS */
+
+textarea,
+input{
+    width:100%;
+
+    background:#0d0d0d;
+
+    border:1px solid #2a2a2a;
+
+    color:white;
+
+    border-radius:14px;
+
+    padding:16px;
+
+    font-size:14px;
+
+    outline:none;
+
+    transition:.25s;
+}
+
+textarea:focus,
+input:focus{
+    border-color:#de9b14;
+
+    box-shadow:
+        0 0 20px rgba(222,155,20,.3);
+}
+
+#inputArea{
+    height:220px;
+    resize:vertical;
+}
+
+/* BUTTONS */
+
+.button-group{
+    margin-top:20px;
+}
+
+.xlsx-btn{
+    background:#1e2a38;
+
+    color:#e8eef4;
+
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.xlsx-btn:hover{
+    background:#28394c;
+
+    color:#fff;
+
+    box-shadow:0 0 20px rgba(30,42,56,.6);
+}
+
+.reset-btn{
+    background:transparent;
+
+    color:#ff8a7a;
+
+    border:1px solid rgba(255,59,48,.45);
+}
+
+.reset-btn:hover{
+    background:rgba(255,59,48,.15);
+
+    color:#ff9d92;
+
+    box-shadow:0 0 20px rgba(255,59,48,.35);
+}
+
+/* AI AGENT PANEL */
+
+@keyframes carroPulseRing{
+    0%{
+        transform:scale(1);
+        opacity:.55;
+    }
+    80%{
+        transform:scale(1.35);
+        opacity:0;
+    }
+    100%{
+        transform:scale(1.35);
+        opacity:0;
+    }
+}
+
+@keyframes carroPopIn{
+    0%{
+        opacity:0;
+        transform:translateY(10px) scale(.9);
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+.agent-launcher{
+    position:fixed;
+
+    bottom:28px;
+    left:28px;
+
+    width:66px;
+    height:66px;
+
+    margin:0;
+
+    border-radius:50%;
+
+    background:#111;
+
+    border:3px solid #de9b14;
+
+    padding:0;
+
+    cursor:pointer;
+
+    z-index:2001;
+
+    perspective:600px;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.55),
+        0 0 0 6px rgba(222,155,20,.14);
+
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
+}
+
+.agent-launcher::before{
+    content:'';
+
+    position:absolute;
+
+    inset:-6px;
+
+    border-radius:50%;
+
+    border:2px solid rgba(222,155,20,.55);
+
+    pointer-events:none;
+
+    animation:carroPulseRing 2.6s ease-out infinite;
+}
+
+.agent-launcher.is-open::before{
+    animation:none;
+
+    opacity:0;
+}
+
+.agent-launcher:hover{
+    transform:translateY(-3px) scale(1.04);
+
+    background:#111;
+
+    box-shadow:
+        0 16px 36px rgba(0,0,0,.6),
+        0 0 0 8px rgba(222,155,20,.2);
+}
+
+.agent-launcher-flip{
+    position:relative;
+
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    transform-style:preserve-3d;
+
+    transition:transform .55s cubic-bezier(.68,-0.4,.32,1.4);
+}
+
+.agent-launcher.is-open .agent-launcher-flip{
+    transform:rotateY(180deg);
+}
+
+.agent-launcher-face{
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border-radius:50%;
+
+    backface-visibility:hidden;
+}
+
+.agent-launcher-face-front{
+    padding:5px;
+}
+
+.agent-launcher-face-back{
+    transform:rotateY(180deg);
+
+    background:#111;
+
+    color:#f4b632;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    line-height:1;
+}
+
+.agent-launcher .agent-avatar-icon{
+    width:100%;
+    height:100%;
+
+    border-radius:50%;
+}
+
+.agent-launcher-dot{
+    position:absolute;
+
+    bottom:2px;
+    right:2px;
+
+    width:14px;
+    height:14px;
+
+    border-radius:50%;
+
+    background:#3ddc61;
+
+    border:2px solid #111;
+}
+
+.agent-panel{
+    position:fixed;
+
+    bottom:108px;
+    left:28px;
+
+    width:390px;
+    height:560px;
+
+    max-height:75vh;
+
+    background:
+        linear-gradient(
+            160deg,
+            #0b0b0b,
+            #1a1a1a
+        );
+
+    border:1px solid rgba(222,155,20,.35);
+
+    border-radius:26px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.65);
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+    z-index:2000;
+
+    opacity:0;
+
+    transform-origin:bottom left;
+
+    transform:translateY(24px) scale(.85);
+
+    pointer-events:none;
+
+    transition:opacity .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+
+.agent-panel.open{
+    opacity:1;
+
+    transform:translateY(0) scale(1);
+
+    pointer-events:auto;
+}
+
+.agent-panel.open .agent-panel-header{
+    animation:carroPopIn .35s ease both;
+}
+
+.agent-panel.open .agent-welcome{
+    animation:carroPopIn .4s ease .05s both;
+}
+
+.agent-panel.open .agent-panel-footer{
+    animation:carroPopIn .4s ease .1s both;
+}
+
+.agent-panel-header{
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:18px 20px;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+    flex-shrink:0;
+}
+
+.agent-avatar-icon{
+    display:block;
+}
+
+.agent-avatar-mini{
+    width:26px;
+    height:26px;
+
+    flex-shrink:0;
+}
+
+.agent-avatar-large{
+    width:92px;
+    height:92px;
+
+    margin-bottom:16px;
+
+    filter:drop-shadow(0 0 30px rgba(222,155,20,.4));
+}
+
+.agent-title{
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+
+    color:#f0f0f0;
+
+    text-transform:uppercase;
+
+    flex:1;
+}
+
+.agent-close-btn{
+    width:26px;
+    height:26px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+
+    border:none;
+
+    color:#ccc;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    padding:0;
+
+    margin:0;
+
+    flex-shrink:0;
+}
+
+.agent-close-btn:hover{
+    background:#ff3b30;
+
+    color:white;
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+.agent-panel-body{
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:22px 20px;
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.agent-welcome{
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+
+    margin-top:6px;
+}
+
+.agent-welcome-title{
+    font-size:20px;
+
+    font-weight:800;
+
+    color:#fff;
+
+    margin-bottom:6px;
+}
+
+.agent-welcome-sub{
+    font-size:12px;
+
+    color:#9d9d9d;
+
+    margin-bottom:22px;
+}
+
+.agent-suggestions{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    justify-content:center;
+}
+
+.agent-suggestion-btn{
+    background:rgba(222,155,20,.12);
+
+    border:1px solid rgba(222,155,20,.35);
+
+    color:#f4b632;
+
+    font-size:10px;
+
+    padding:9px 14px;
+
+    border-radius:20px;
+
+    text-transform:none;
+
+    letter-spacing:.2px;
+
+    font-weight:600;
+
+    margin:0;
+}
+
+.agent-suggestion-btn:hover{
+    background:rgba(222,155,20,.22);
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+.agent-chat-log{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    margin-top:16px;
+}
+
+.agent-bubble{
+    max-width:82%;
+
+    padding:10px 14px;
+
+    border-radius:14px;
+
+    font-size:12px;
+
+    line-height:1.6;
+
+    word-break:break-word;
+
+    white-space:pre-line;
+}
+
+.agent-bubble-bot{
+    max-width:94%;
+}
+
+.agent-bubble-user{
+    align-self:flex-end;
+
+    background:#de9b14;
+
+    color:#111;
+
+    border-bottom-right-radius:4px;
+}
+
+.agent-bubble-bot{
+    align-self:flex-start;
+
+    background:rgba(255,255,255,.06);
+
+    color:#e8e8e8;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    border-bottom-left-radius:4px;
+}
+
+.agent-panel-footer{
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:14px 16px;
+
+    border-top:1px solid rgba(255,255,255,.06);
+
+    flex-shrink:0;
+}
+
+.agent-panel-footer input{
+    flex:1;
+
+    width:auto;
+
+    background:#0d0d0d;
+
+    border:1px solid #2a2a2a;
+
+    border-radius:20px;
+
+    padding:11px 16px;
+
+    font-size:12px;
+
+    margin:0;
+}
+
+.agent-send-btn{
+    width:38px;
+    height:38px;
+
+    border-radius:50%;
+
+    background:#de9b14;
+
+    color:#000;
+
+    border:none;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0;
+
+    margin:0;
+
+    flex-shrink:0;
+}
+
+.agent-send-btn:hover{
+    background:#f4b632;
+
+    transform:none;
+
+    box-shadow:0 0 16px rgba(222,155,20,.4);
+}
+
+.renamed-label{
+    color:#7ee787;
+}
+
+button{
+    background:#de9b14;
+
+    color:black;
+
+    border:none;
+
+    padding:14px 24px;
+
+    margin:6px;
+
+    border-radius:12px;
+
+    font-weight:800;
+
+    font-size:13px;
+
+    letter-spacing:1px;
+
+    text-transform:uppercase;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+button:hover{
+    transform:translateY(-2px);
+
+    background:#f4b632;
+
+    box-shadow:
+        0 0 20px rgba(222,155,20,.4);
+}
+
+/* STATS */
+
+#statsDashboard{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    margin-top:18px;
+
+    background:#0d0d0d;
+
+    border:1px solid #2c2c2c;
+
+    border-radius:12px;
+
+    padding:14px;
+}
+
+.stat-box{
+    flex:1;
+
+    min-width:160px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.03),
+            rgba(255,255,255,.01)
+        );
+
+    border:1px solid rgba(222,155,20,.15);
+
+    border-radius:10px;
+
+    padding:14px;
+}
+
+.stat-title{
+    color:#de9b14;
+
+    font-size:12px;
+
+    letter-spacing:2px;
+
+    margin-bottom:6px;
+}
+
+.stat-value{
+    font-size:26px;
+
+    font-weight:800;
+}
+
+/* SEARCH */
+
+.search-wrap{
+    position:relative;
+
+    margin-top:14px;
+}
+
+#searchBox{
+    margin-top:0;
+
+    padding:12px 40px 12px 14px;
+
+    border-radius:12px;
+}
+
+.search-clear-btn{
+    position:absolute;
+
+    top:50%;
+    right:8px;
+
+    transform:translateY(-50%);
+
+    width:26px;
+    height:26px;
+
+    border-radius:50%;
+
+    background:transparent;
+
+    border:none;
+
+    color:#8d8d8d;
+
+    font-size:17px;
+
+    line-height:1;
+
+    cursor:pointer;
+
+    padding:0;
+
+    margin:0;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.search-clear-btn:hover{
+    background:rgba(255,255,255,.08);
+
+    color:#fff;
+
+    transform:translateY(-50%);
+
+    box-shadow:none;
+}
+
+.search-wrap.has-value .search-clear-btn{
+    display:flex;
+}
+
+/* IMAGE CONTAINER */
+
+#imageContainer{
+    margin-top:35px;
+}
+
+.load-more-btn{
+    display:block;
+
+    width:100%;
+
+    margin:10px 0 0 0;
+
+    padding:16px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(222,155,20,.12),
+            rgba(222,155,20,.04)
+        );
+
+    border:1px dashed rgba(222,155,20,.4);
+
+    color:#de9b14;
+
+    font-size:12px;
+
+    letter-spacing:1px;
+
+    border-radius:16px;
+}
+
+.load-more-btn:hover{
+    background:rgba(222,155,20,.2);
+}
+
+/* ROW */
+
+.excel-row{
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.03),
+            rgba(255,255,255,.01)
+        );
+
+    border:1px solid rgba(222,155,20,.18);
+
+    border-radius:24px;
+
+    padding:24px;
+
+    margin-bottom:32px;
+
+    box-shadow:
+        0 0 30px rgba(0,0,0,.45);
+}
+
+.excel-row::before{
+    content:'';
+
+    position:absolute;
+
+    top:0;
+    right:-90px;
+
+    width:200px;
+    height:100%;
+
+    background:rgba(222,155,20,.08);
+
+    transform:skewX(-25deg);
+}
+
+/* ROW TOP BAR (SKU box + live URL output, positioned above the thumbnails) */
+
+.row-top-bar{
+    display:flex;
+
+    align-items:stretch;
+
+    gap:10px;
+
+    width:100%;
+
+    height:91px;
+
+    margin-bottom:18px;
+}
+
+.row-sku-box{
+    flex:0 0 170px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:4px;
+
+    background:
+        linear-gradient(
+            160deg,
+            #1a2530,
+            #0e161d
+        );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:16px;
+
+    padding:8px;
+
+    text-align:center;
+}
+
+.row-sku-label{
+    font-size:10px;
+
+    letter-spacing:2px;
+
+    color:#8fa3b3;
+
+    text-transform:uppercase;
+
+    font-weight:700;
+}
+
+.row-sku-value{
+    font-size:12px;
+
+    color:#fff;
+
+    font-weight:800;
+
+    word-break:break-all;
+
+    line-height:1.3;
+}
+
+.row-content{
+    display:block;
+}
+
+/* ROW ACTIONS (Copy Set + Delete Set) */
+
+.row-actions{
+    display:inline-flex;
+
+    flex-direction:column;
+
+    vertical-align:top;
+
+    width:210px;
+
+    flex-shrink:0;
+}
+
+.row-actions > button{
+    width:100%;
+}
+
+.delete-set-btn{
+    background:#ff3b30;
+
+    color:white;
+}
+
+.delete-set-btn:hover{
+    background:#ff5c52;
+
+    box-shadow:
+        0 0 20px rgba(255,59,48,.45);
+}
+
+/* SET OUTPUT PANEL (live URL preview / copy / apply) */
+
+.set-output-panel{
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    background:#0d0d0d;
+
+    border:1px solid #2c2c2c;
+
+    border-radius:14px;
+
+    padding:8px 10px;
+
+    transition:box-shadow .3s ease, border-color .3s ease;
+}
+
+.set-output-panel.just-applied{
+    animation:carroAppliedFlash .9s ease-out;
+}
+
+@keyframes carroAppliedFlash{
+    0%{
+        box-shadow:0 0 0 0 rgba(61,220,97,.55);
+        border-color:#3ddc61;
+    }
+    100%{
+        box-shadow:0 0 0 16px rgba(61,220,97,0);
+        border-color:#2c2c2c;
+    }
+}
+
+.set-output-header{
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-bottom:4px;
+
+    flex-shrink:0;
+}
+
+.set-output-label-wrap{
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    min-width:0;
+}
+
+.set-output-label{
+    font-size:10px;
+
+    letter-spacing:2px;
+
+    color:#de9b14;
+
+    text-transform:uppercase;
+
+    font-weight:700;
+
+    flex-shrink:0;
+}
+
+.set-output-dirty-badge{
+    font-size:9px;
+
+    color:#f4b632;
+
+    letter-spacing:.3px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.set-output-content-row{
+    flex:1;
+
+    min-height:0;
+
+    display:flex;
+
+    align-items:stretch;
+
+    gap:6px;
+}
+
+.set-output-box{
+    flex:1;
+
+    min-width:0;
+
+    height:100%;
+
+    overflow-y:auto;
+
+    font-family:'Courier New', monospace;
+
+    font-size:10.5px;
+
+    line-height:1.5;
+
+    color:#b9b9b9;
+
+    white-space:pre-wrap;
+
+    word-break:break-all;
+
+    background:transparent;
+
+    border:1px solid transparent;
+
+    border-radius:8px;
+
+    outline:none;
+
+    resize:none;
+
+    padding:2px 4px;
+
+    cursor:default;
+
+    transition:border-color .2s ease, background .2s ease;
+}
+
+.set-output-box:read-only{
+    cursor:default;
+}
+
+.set-output-box:not(:read-only){
+    cursor:text;
+
+    background:rgba(222,155,20,.05);
+
+    border-color:rgba(222,155,20,.35);
+}
+
+.set-output-box:hover{
+    border-color:rgba(222,155,20,.2);
+}
+
+.set-output-box:focus{
+    border-color:rgba(222,155,20,.5);
+
+    background:rgba(222,155,20,.04);
+
+    box-shadow:0 0 20px rgba(222,155,20,.3);
+}
+
+.set-output-btn-stack{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+    flex-shrink:0;
+}
+
+.set-output-edit-btn{
+    width:26px;
+    height:26px;
+
+    border-radius:8px;
+
+    background:transparent;
+
+    border:1px solid rgba(222,155,20,.4);
+
+    color:#de9b14;
+
+    font-size:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0;
+
+    margin:0;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+}
+
+.set-output-edit-btn:hover{
+    background:rgba(222,155,20,.15);
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+.set-output-edit-btn.active{
+    background:#f4b632;
+
+    border-color:#f4b632;
+
+    color:#111;
+}
+
+.set-output-copy-btn{
+    width:26px;
+    height:26px;
+
+    border-radius:8px;
+
+    background:transparent;
+
+    border:1px solid rgba(222,155,20,.4);
+
+    color:#de9b14;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:0;
+
+    margin:0;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+}
+
+.set-output-copy-btn svg{
+    width:14px;
+    height:14px;
+}
+
+.set-output-copy-btn:hover{
+    background:rgba(222,155,20,.15);
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+.set-output-copy-btn.copied{
+    background:#3ddc61;
+
+    border-color:#3ddc61;
+
+    color:#111;
+}
+
+.set-apply-btn{
+    width:26px;
+    height:26px;
+
+    margin:0;
+
+    padding:0;
+
+    background:linear-gradient(135deg,#1c1c1c,#111);
+
+    border:1px solid rgba(222,155,20,.4);
+
+    color:#de9b14;
+
+    font-size:13px;
+
+    border-radius:8px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+}
+
+.set-apply-btn:hover{
+    background:#de9b14;
+
+    color:#111;
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+/* ROW VALIDATION BADGES */
+
+.row-badges{
+    width:100%;
+
+    margin:8px 6px 0 6px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:6px;
+}
+
+.row-badge{
+    font-size:10px;
+
+    letter-spacing:.3px;
+
+    padding:6px 10px;
+
+    border-radius:8px;
+
+    text-align:center;
+}
+
+.row-badge-warning{
+    background:rgba(244,182,50,.12);
+
+    border:1px solid rgba(244,182,50,.4);
+
+    color:#f4b632;
+}
+
+/* COPY TOAST */
+
+.copy-toast{
+    position:fixed;
+
+    bottom:36px;
+    left:50%;
+
+    transform:translateX(-50%) translateY(12px);
+
+    background:#141414;
+
+    border:1px solid rgba(61,220,97,.5);
+
+    color:#7ee787;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    letter-spacing:.4px;
+
+    padding:12px 22px;
+
+    border-radius:999px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.5);
+
+    opacity:0;
+
+    pointer-events:none;
+
+    z-index:4000;
+
+    transition:opacity .25s ease, transform .25s ease;
+}
+
+.copy-toast.show{
+    opacity:1;
+
+    transform:translateX(-50%) translateY(0);
+}
+
+/* APPLY MODIFICATION CONFIRM MODAL */
+
+.apply-modal{
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.72);
+
+    z-index:3000;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.apply-modal.active{
+    display:flex;
+}
+
+.apply-modal-content{
+    width:90%;
+
+    max-width:360px;
+
+    background:
+        linear-gradient(
+            160deg,
+            #141414,
+            #1e1e1e
+        );
+
+    border:1px solid rgba(222,155,20,.35);
+
+    border-radius:22px;
+
+    padding:28px 26px;
+
+    text-align:center;
+
+    box-shadow:0 25px 60px rgba(0,0,0,.6);
+
+    animation:carroPopIn .3s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.apply-modal-icon{
+    font-size:34px;
+
+    margin-bottom:10px;
+}
+
+.apply-modal-title{
+    font-size:16px;
+
+    font-weight:800;
+
+    color:#fff;
+
+    margin-bottom:8px;
+}
+
+.apply-modal-sub{
+    font-size:12px;
+
+    color:#a8a8a8;
+
+    line-height:1.5;
+
+    margin-bottom:20px;
+}
+
+.apply-modal-actions{
+    display:flex;
+
+    gap:10px;
+}
+
+.apply-modal-btn{
+    flex:1;
+
+    margin:0;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    font-size:12px;
+}
+
+.apply-modal-yes{
+    background:#de9b14;
+
+    color:#111;
+}
+
+.apply-modal-no{
+    background:rgba(255,255,255,.08);
+
+    color:#ddd;
+}
+
+.apply-modal-no:hover{
+    background:rgba(255,255,255,.15);
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+/* IMAGE CARD */
+
+.image-item{
+    display:inline-block;
+
+    width:190px;
+
+    margin:12px;
+
+    vertical-align:top;
+
+    position:relative;
+}
+
+.image-item img{
+    width:100%;
+
+    height:170px;
+
+    object-fit:cover;
+
+    border-radius:16px;
+
+    border:2px solid #2c2c2c;
+
+    background:#111;
+
+    transition:.3s;
+
+    cursor:pointer;
+}
+
+.image-item img:hover{
+    transform:scale(1.03);
+
+    border-color:#de9b14;
+
+    box-shadow:
+        0 0 28px rgba(222,155,20,.35);
+}
+
+.image-label{
+    margin-top:12px;
+
+    font-size:12px;
+
+    line-height:1.5;
+
+    color:#d0d0d0;
+
+    word-break:break-word;
+
+    cursor:pointer;
+
+    transition:color .2s ease;
+}
+
+.image-label:hover{
+    color:#f4b632;
+}
+
+.image-label.label-copied{
+    color:#7ee787 !important;
+}
+
+.malformed-warning{
+    margin-top:4px;
+
+    font-size:10px;
+
+    color:#f4b632;
+
+    letter-spacing:.2px;
+}
+
+.image-item[data-broken="true"] img{
+    opacity:0;
+}
+
+.image-item[data-broken="true"]::after{
+    content:'⚠ Failed to load';
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:170px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:10px;
+
+    background:#241010;
+
+    border:2px dashed #ff6b5e;
+
+    border-radius:16px;
+
+    color:#ff9d92;
+
+    font-size:11px;
+
+    letter-spacing:.3px;
+}
+
+/* DELETE BUTTON (per image) */
+
+.delete-btn{
+    position:absolute;
+
+    top:8px;
+    right:8px;
+
+    width:28px;
+    height:28px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:#ff3b30;
+
+    color:white;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    z-index:2;
+}
+
+/* PREVIEW MODAL */
+
+.preview-modal{
+    display:none;
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,.88);
+
+    z-index:1000;
+
+    align-items:center;
+
+    justify-content:center;
+}
+
+.preview-modal.active{
+    display:flex;
+}
+
+.preview-modal-content{
+    position:relative;
+
+    width:95%;
+    height:95%;
+
+    max-width:1900px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #111111,
+            #1a1a1a
+        );
+
+    border:1px solid rgba(222,155,20,.3);
+
+    border-radius:22px;
+
+    padding:14px 18px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    box-shadow:
+        0 0 60px rgba(0,0,0,.6);
+}
+
+.preview-close{
+    position:absolute;
+
+    top:18px;
+    right:18px;
+
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:#ff3b30;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    z-index:5;
+}
+
+.preview-main{
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:14px;
+
+    overflow:hidden;
+
+    min-height:0;
+}
+
+.preview-nav{
+    flex-shrink:0;
+
+    width:38px;
+    height:38px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:#de9b14;
+
+    color:black;
+
+    font-size:20px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    padding:0;
+
+    margin:0;
+}
+
+.preview-nav:hover{
+    background:#f4b632;
+}
+
+.preview-image-wrap{
+    flex:1;
+
+    height:100%;
+
+    min-width:0;
+
+    min-height:0;
+
+    overflow:hidden;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    position:relative;
+
+    touch-action:none;
+}
+
+#previewImage{
+    max-width:100%;
+
+    max-height:100%;
+
+    object-fit:contain;
+
+    border-radius:14px;
+
+    border:2px solid #2c2c2c;
+
+    transition:transform .15s ease-out;
+
+    transform-origin:center center;
+
+    user-select:none;
+
+    -webkit-user-drag:none;
+}
+
+.preview-footer{
+    flex-shrink:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    margin-top:6px;
+
+    padding:5px 6px;
+}
+
+.preview-meta{
+    font-size:10px;
+
+    color:#d0d0d0;
+
+    letter-spacing:.5px;
+
+    word-break:break-all;
+}
+
+.preview-meta .preview-counter{
+    color:#de9b14;
+
+    letter-spacing:1.5px;
+
+    font-weight:700;
+
+    margin-right:6px;
+}
+
+.preview-actions{
+    display:flex;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:6px;
+
+    margin:0;
+}
+
+.preview-actions button{
+    font-size:9px;
+
+    padding:5px 10px;
+
+    margin:0;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:4px;
+}
+
+.preview-enlarge-panel{
+    width:100%;
+
+    margin-top:8px;
+
+    padding:8px 10px;
+
+    background:rgba(255,255,255,0.03);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:12px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+}
+
+.preview-enlarge-row{
+    display:flex;
+
+    flex-wrap:wrap;
+
+    align-items:flex-end;
+
+    gap:8px;
+}
+
+.preview-enlarge-field{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:3px;
+
+    font-size:9px;
+
+    letter-spacing:.3px;
+
+    color:#8d8d8d;
+
+    text-transform:uppercase;
+}
+
+.preview-enlarge-field input{
+    width:78px;
+
+    padding:6px 8px;
+
+    font-size:11px;
+
+    border-radius:8px;
+}
+
+.preview-enlarge-btn{
+    font-size:10px;
+
+    padding:8px 14px;
+
+    margin:0;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:5px;
+}
+
+.preview-enlarge-btn--ghost{
+    background:transparent;
+
+    color:#de9b14;
+
+    border:1px solid rgba(222,155,20,.4);
+}
+
+.preview-enlarge-btn--ghost:hover{
+    background:rgba(222,155,20,.12);
+
+    transform:none;
+
+    box-shadow:none;
+}
+
+.preview-enlarge-btn--accent{
+    background:#3ddc61;
+
+    color:#111;
+}
+
+.preview-enlarge-btn--accent:hover{
+    background:#5be47c;
+}
+
+.preview-enlarge-btn:disabled{
+    opacity:.4;
+
+    cursor:not-allowed;
+
+    transform:none !important;
+
+    box-shadow:none !important;
+}
+
+.preview-enlarge-status{
+    font-size:10px;
+
+    color:#94a3b8;
+
+    letter-spacing:.2px;
+
+    min-height:14px;
+}
+
+.preview-thumbnails{
+    display:flex;
+
+    gap:6px;
+
+    overflow-x:auto;
+
+    padding:4px 2px 0 2px;
+
+    margin-top:2px;
+}
+
+.preview-thumb{
+    width:46px;
+    height:46px;
+
+    object-fit:cover;
+
+    border-radius:8px;
+
+    border:2px solid #2c2c2c;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+
+    opacity:.55;
+
+    transition:.2s;
+}
+
+.preview-thumb:hover{
+    opacity:.85;
+}
+
+.preview-thumb.active-thumb{
+    opacity:1;
+
+    border-color:#de9b14;
+
+    box-shadow:
+        0 0 12px rgba(222,155,20,.5);
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-track{
+    background:#111;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#de9b14;
+    border-radius:20px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+    .page-title{
+        font-size:42px;
+    }
+
+    .image-item{
+        width:100%;
+        margin:10px 0;
+    }
+
+    button{
+        width:100%;
+        margin-right:12px;
+    }
+
+    .row-actions{
+        width:100%;
+    }
+
+    .row-top-bar{
+        flex-direction:column;
+        height:auto;
+    }
+
+    .row-sku-box{
+        flex:0 0 auto;
+        padding:10px;
+    }
+
+    .set-output-panel{
+        min-height:120px;
+    }
+
+    .preview-modal-content{
+        width:96%;
+        height:96%;
+        padding:16px;
+    }
+
+    .preview-nav{
+        width:36px;
+        height:36px;
+        font-size:18px;
+    }
+
+    .agent-panel{
+        bottom:96px;
+        left:4%;
+        right:4%;
+        width:92%;
+        height:70vh;
+    }
+
+    .agent-launcher{
+        width:56px;
+        height:56px;
+        bottom:18px;
+        left:18px;
+    }
+
+}
+
+.app-footer{
+
+    margin-top:40px;
+
+    text-align:center;
+
+    color:#8d8d8d;
+
+    font-size:12px;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    opacity:.75;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+<img
+src="https://www.karparts360.com/var/images/logo/163.30/public/images/simplecms/logo_Company_logo_desktop_version_2.png"
+alt="Logo"
+class="logo"
+>
+
+<h1 class="page-title">
+Image URL Viewer and Downloader
+</h1>
+
+<div class="page-sub">
+Intended for Image URL viewing, opening, and management. Paste your data below to visualize and interact with your image URLs efficiently.
+</div>
+
+</header>
+
+<div class="main-panel">
+
+<div class="control-panel">
+
+<h3>Paste Image URL Data</h3>
+
+<textarea id="inputArea" placeholder="Paste image URL data here..."></textarea>
+
+<div class="button-group">
+
+<button id="processButton">
+Display Images & URLs
+</button>
+
+<button id="copyAllUrlsButton">
+Copy All URLs
+</button>
+
+<button id="downloadXlsxButton" class="xlsx-btn">
+Download XLSX
+</button>
+
+<button id="resetProcessorButton" class="reset-btn">
+&#8635; Reset
+</button>
+
+</div>
+
+<div id="statsDashboard">
+
+<div class="stat-box">
+<div class="stat-title">SETS</div>
+<div class="stat-value" id="setCount">0</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-title">IMAGES</div>
+<div class="stat-value" id="imageCount">0</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-title">DUPLICATES</div>
+<div class="stat-value" id="duplicateCount">0</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-title">BROKEN</div>
+<div class="stat-value" id="brokenCount">0</div>
+</div>
+
+</div>
+
+<div class="search-wrap">
+<input
+type="text"
+id="searchBox"
+placeholder="Search image name..."
+>
+<button type="button" id="searchClearBtn" class="search-clear-btn" aria-label="Clear search">&times;</button>
+</div>
+
+</div>
+
+<div id="imageContainer"></div>
+
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="preview-modal" id="previewModal">
+    <div class="preview-modal-content">
+
+        <button class="preview-close" id="previewCloseBtn">&times;</button>
+
+        <div class="preview-main">
+            <button class="preview-nav" id="previewPrevBtn">&#8249;</button>
+            <div class="preview-image-wrap" id="previewImageWrap" title="Scroll or pinch to zoom &middot; drag to pan &middot; double-click to reset">
+                <img id="previewImage" src="" alt="Preview">
+            </div>
+            <button class="preview-nav" id="previewNextBtn">&#8250;</button>
+        </div>
+
+        <div class="preview-footer">
+
+            <div class="preview-meta">
+                <span class="preview-counter" id="previewCounter"></span><span id="previewLabel"></span>
+            </div>
+
+            <div class="preview-actions">
+                <button id="previewCopyUrlBtn">&#128203; Copy URL</button>
+                <button id="previewCopyIdBtn">&#127991; Copy ID</button>
+                <button id="previewResetZoomBtn">&#128269; Reset Zoom</button>
+            </div>
+
+            <div class="preview-enlarge-panel">
+
+                <div class="preview-enlarge-row">
+
+                    <label class="preview-enlarge-field">
+                        <span>Width</span>
+                        <input type="number" id="enlargeWidth" value="1500" min="100" step="10">
+                    </label>
+
+                    <label class="preview-enlarge-field">
+                        <span>Height</span>
+                        <input type="number" id="enlargeHeight" value="1500" min="100" step="10">
+                    </label>
+
+                    <label class="preview-enlarge-field">
+                        <span>Margin (in)</span>
+                        <input type="number" id="enlargeMarginIn" value="1" min="0" step="0.25">
+                    </label>
+
+                    <label class="preview-enlarge-field">
+                        <span>DPI</span>
+                        <input type="number" id="enlargeDpi" value="96" min="1" step="1">
+                    </label>
+
+                </div>
+
+                <div class="preview-enlarge-row">
+                    <button id="previewEnlargeBtn" class="preview-enlarge-btn">&#8862; Enlarge</button>
+                    <button id="previewUndoEnlargeBtn" class="preview-enlarge-btn preview-enlarge-btn--ghost" disabled>&#8630; Undo</button>
+                    <button id="previewDownloadEnlargedBtn" class="preview-enlarge-btn preview-enlarge-btn--accent" disabled>&#11015; Download</button>
+                </div>
+
+                <div class="preview-enlarge-status" id="previewEnlargeStatus"></div>
+
+            </div>
+
+        </div>
+
+        <div class="preview-thumbnails" id="previewThumbnails"></div>
+
+    </div>
+</div>
+
+<!-- Reusable "Carro" agent avatar artwork (original illustration, not a reproduction of
+     any copyrighted photo or character — a simple original car mascot design) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <radialGradient id="carBodyGrad" cx="35%" cy="18%" r="90%">
+            <stop offset="0%" stop-color="#fff6cf"/>
+            <stop offset="45%" stop-color="#ffd23f"/>
+            <stop offset="100%" stop-color="#e8a900"/>
+        </radialGradient>
+        <symbol id="carAgentAvatar" viewBox="0 0 200 200">
+
+            <!-- wheels -->
+            <circle cx="42" cy="178" r="21" fill="#1c1c1c"/>
+            <circle cx="42" cy="178" r="8" fill="#5a5a5a"/>
+            <circle cx="158" cy="178" r="21" fill="#1c1c1c"/>
+            <circle cx="158" cy="178" r="8" fill="#5a5a5a"/>
+
+            <!-- side mirrors -->
+            <rect x="2" y="86" width="16" height="20" rx="8" fill="#e8a900"/>
+            <rect x="182" y="86" width="16" height="20" rx="8" fill="#e8a900"/>
+
+            <!-- car body (hood/roof silhouette) -->
+            <path d="M42 34
+                     C 42 18 62 12 100 12
+                     C 138 12 158 18 158 34
+                     L 172 92
+                     C 177 116 172 146 148 158
+                     L 52 158
+                     C 28 146 23 116 28 92
+                     Z"
+                  fill="url(#carBodyGrad)"/>
+
+            <!-- bumper -->
+            <path d="M50 158 L150 158
+                     C 145 172 128 180 100 180
+                     C 72 180 55 172 50 158 Z"
+                  fill="#c98600"/>
+
+            <!-- windshield tint band -->
+            <path d="M58 28 C 70 18 130 18 142 28 C 133 38 67 38 58 28 Z"
+                  fill="#cdeeff" opacity=".55"/>
+
+            <!-- headlights -->
+            <ellipse cx="45" cy="112" rx="10" ry="14" fill="#fff7d6" stroke="#e8a900" stroke-width="2"/>
+            <ellipse cx="155" cy="112" rx="10" ry="14" fill="#fff7d6" stroke="#e8a900" stroke-width="2"/>
+
+            <!-- eyebrows -->
+            <path d="M52 68 Q68 56 86 64" stroke="#5a3b00" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M114 64 Q132 56 148 68" stroke="#5a3b00" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+            <!-- eyes -->
+            <ellipse cx="67" cy="88" rx="19" ry="22" fill="#ffffff"/>
+            <ellipse cx="133" cy="88" rx="19" ry="22" fill="#ffffff"/>
+            <circle cx="71" cy="92" r="9.5" fill="#5a3b00"/>
+            <circle cx="129" cy="92" r="9.5" fill="#5a3b00"/>
+            <circle cx="75" cy="85" r="3" fill="#ffffff"/>
+            <circle cx="133" cy="85" r="3" fill="#ffffff"/>
+
+            <!-- big grin -->
+            <path d="M50 112
+                     C 62 150 138 150 150 112
+                     C 138 134 62 134 50 112 Z"
+                  fill="#3a2000"/>
+            <path d="M56 116
+                     C 68 138 132 138 144 116
+                     C 132 128 68 128 56 116 Z"
+                  fill="#ffffff"/>
+
+        </symbol>
+    </defs>
+</svg>
+
+<!-- COPY TOAST -->
+<div class="copy-toast" id="copyToast"></div>
+
+<!-- RESET CONFIRM MODAL -->
+<div class="apply-modal" id="resetConfirmModal">
+    <div class="apply-modal-content">
+        <div class="apply-modal-icon">&#8635;</div>
+        <div class="apply-modal-title">Reset the processor?</div>
+        <div class="apply-modal-sub">This clears the pasted data, every set, undo/redo history, and the autosave. This can't be undone.</div>
+        <div class="apply-modal-actions">
+            <button class="apply-modal-btn apply-modal-no" id="resetConfirmCancelBtn">Cancel</button>
+            <button class="apply-modal-btn apply-modal-yes" id="resetConfirmProceedBtn">Reset</button>
+        </div>
+    </div>
+</div>
+
+<!-- XLSX EXPORT CONFIRM MODAL (two-stage) -->
+<div class="apply-modal" id="xlsxConfirmModal">
+    <div class="apply-modal-content">
+        <div class="apply-modal-icon">📊</div>
+        <div class="apply-modal-title" id="xlsxConfirmTitle">Do you want to apply the modification?</div>
+        <div class="apply-modal-sub" id="xlsxConfirmSub">This applies every set's pending changes, then exports the Excel file.</div>
+        <div class="apply-modal-actions">
+            <button class="apply-modal-btn apply-modal-no" id="xlsxConfirmCancelBtn">Cancel</button>
+            <button class="apply-modal-btn apply-modal-yes" id="xlsxConfirmProceedBtn">Proceed</button>
+        </div>
+    </div>
+</div>
+
+<!-- APPLY MODIFICATION CONFIRM MODAL -->
+<div class="apply-modal" id="applyModal">
+    <div class="apply-modal-content">
+        <div class="apply-modal-icon">💾</div>
+        <div class="apply-modal-title">Apply these modifications?</div>
+        <div class="apply-modal-sub">This locks in the current filenames, order, and deletions as this set's output.</div>
+        <div class="apply-modal-actions">
+            <button class="apply-modal-btn apply-modal-no" id="applyModalNoBtn">Cancel</button>
+            <button class="apply-modal-btn apply-modal-yes" id="applyModalYesBtn">Yes, Apply</button>
+        </div>
+    </div>
+</div>
+
+<!-- FLOATING AGENT LAUNCHER -->
+<button class="agent-launcher" id="agentLauncherBtn" aria-label="Open Carro, the image agent">
+    <span class="agent-launcher-flip">
+        <span class="agent-launcher-face agent-launcher-face-front">
+            <svg class="agent-avatar-icon"><use href="#carAgentAvatar"></use></svg>
+            <span class="agent-launcher-dot"></span>
+        </span>
+        <span class="agent-launcher-face agent-launcher-face-back">&times;</span>
+    </span>
+</button>
+
+<!-- AI AGENT PANEL -->
+<div class="agent-panel" id="agentPanel">
+
+    <div class="agent-panel-header">
+        <svg class="agent-avatar-icon agent-avatar-mini"><use href="#carAgentAvatar"></use></svg>
+        <span class="agent-title">Carro</span>
+        <button class="agent-close-btn" id="agentCloseBtn">&times;</button>
+    </div>
+
+    <div class="agent-panel-body" id="agentPanelBody">
+
+        <div class="agent-welcome" id="agentWelcome">
+
+            <svg class="agent-avatar-icon agent-avatar-large"><use href="#carAgentAvatar"></use></svg>
+
+            <div class="agent-welcome-title">Hi, I'm Carro!</div>
+            <div class="agent-welcome-sub">How can I help you today?</div>
+
+            <div class="agent-suggestions">
+                <button class="agent-suggestion-btn" data-cmd="delete duplicates">Delete duplicates</button>
+                <button class="agent-suggestion-btn" data-cmd="show all duplicates">Show duplicates</button>
+                <button class="agent-suggestion-btn" data-template="show all sets with 4 images">Show sets by size</button>
+                <button class="agent-suggestion-btn" data-template="download all master_v2.JPG">Download a pattern</button>
+                <button class="agent-suggestion-btn" data-template="rename id OLD-ID into NEW-ID">Rename an ID</button>
+                <button class="agent-suggestion-btn" data-cmd="help">What can you do?</button>
+            </div>
+
+        </div>
+
+        <div class="agent-chat-log" id="agentChatLog"></div>
+
+    </div>
+
+    <div class="agent-panel-footer">
+
+        <input
+        type="text"
+        id="agentInput"
+        placeholder='Ask Carro... e.g. "Rename ID X into Y"'
+        >
+
+        <button class="agent-send-btn" id="agentRunBtn">&#10148;</button>
+
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+
+/* ============ STATS ============ */
+
+let projectedTotalSets = 0;
+
+let projectedTotalImages = 0;
+
+let isFilterActive = false;
+
+function setFilterActiveState(active){
+
+    isFilterActive = active;
+
+    updateStats();
+
+}
+
+function updateStats(){
+
+    if(isFilterActive){
+
+        const visibleSets =
+            Array.from(document.querySelectorAll('.excel-row'))
+                .filter(row => row.style.display !== 'none').length;
+
+        const visibleImages =
+            Array.from(document.querySelectorAll('.image-item'))
+                .filter(item => item.style.display !== 'none').length;
+
+        const visibleDuplicates =
+            Array.from(document.querySelectorAll('.image-item[data-duplicate="true"]'))
+                .filter(item => item.style.display !== 'none').length;
+
+        const visibleBroken =
+            Array.from(document.querySelectorAll('.image-item[data-broken="true"]'))
+                .filter(item => item.style.display !== 'none').length;
+
+        document.getElementById('setCount').textContent = visibleSets;
+        document.getElementById('imageCount').textContent = visibleImages;
+        document.getElementById('duplicateCount').textContent = visibleDuplicates;
+
+        const brokenEl =
+            document.getElementById('brokenCount');
+
+        if(brokenEl) brokenEl.textContent = visibleBroken;
+
+        return;
+
+    }
+
+    const duplicates =
+        document.querySelectorAll('.image-item[data-duplicate="true"]').length;
+
+    const broken =
+        document.querySelectorAll('.image-item[data-broken="true"]').length;
+
+    document.getElementById('setCount').textContent =
+        projectedTotalSets;
+
+    document.getElementById('imageCount').textContent =
+        projectedTotalImages;
+
+    document.getElementById('duplicateCount').textContent =
+        duplicates;
+
+    const brokenEl =
+        document.getElementById('brokenCount');
+
+    if(brokenEl) brokenEl.textContent = broken;
+
+}
+
+/* ============ SMART ID / SKU DETECTION ============ */
+
+function extractImageId(url){
+
+    try{
+
+        let clean =
+            url.split('?')[0].split('#')[0];
+
+        clean =
+            clean.replace(/\/+$/,'');
+
+        const segments =
+            clean.split('/');
+
+        const filename =
+            segments[segments.length - 1];
+
+        return filename && filename.length > 0
+            ? filename
+            : url;
+
+    }catch(e){
+
+        return url;
+
+    }
+
+}
+
+function getItemDisplayName(item){
+
+    const labelElem =
+        item.querySelector('.image-label');
+
+    if(labelElem && labelElem.textContent.trim() !== ''){
+        return labelElem.textContent.trim();
+    }
+
+    const img =
+        item.querySelector('img');
+
+    return img ? extractImageId(img.src) : '';
+
+}
+
+/* ============ SMART DETECTION / VALIDATION HELPERS ============ */
+
+function isLikelyImageUrlValue(value){
+
+    return /\.(jpe?g|png|gif|webp|bmp)(\?.*)?$/i.test(value.trim());
+
+}
+
+function countImagePairsInLine(line){
+
+    const pairs =
+        line.split(',');
+
+    let count = 0;
+
+    pairs.forEach(pair => {
+
+        const eqIdx =
+            pair.indexOf('=');
+
+        if(eqIdx === -1) return;
+
+        const key =
+            pair.slice(0, eqIdx);
+
+        const value =
+            pair.slice(eqIdx + 1);
+
+        if(!key || !value) return;
+
+        const keyLooksRight =
+            key.trim().toUpperCase().indexOf('IMAGEURL') !== -1;
+
+        const valueLooksLikeImage =
+            isLikelyImageUrlValue(value);
+
+        if(!keyLooksRight && !valueLooksLikeImage) return;
+
+        if(value.trim() === '') return;
+
+        count++;
+
+    });
+
+    return count;
+
+}
+
+function isWellFormedImageUrl(value){
+
+    const v =
+        value.trim();
+
+    if(!/^https?:\/\//i.test(v)) return false;
+
+    try{
+        new URL(v);
+    }catch(e){
+        return false;
+    }
+
+    return true;
+
+}
+
+function normalizeUrlForDuplicateCheck(url){
+
+    let u =
+        url.trim();
+
+    u = u.split('?')[0].split('#')[0];
+
+    u = u.replace(/\/+$/, '');
+
+    u = u.replace(/^http:\/\//i, 'https://');
+
+    return u.toLowerCase();
+
+}
+
+function csvEscape(value){
+
+    const str =
+        String(value);
+
+    if(/[",\n]/.test(str)){
+        return '"' + str.replace(/"/g, '""') + '"';
+    }
+
+    return str;
+
+}
+
+function getRowUrlPairs(row){
+
+    const items =
+        Array.from(row.querySelectorAll('.image-item'));
+
+    const pairs = [];
+
+    items.forEach((item, idx) => {
+
+        const img =
+            item.querySelector('img');
+
+        if(!img) return;
+
+        const label =
+            item.querySelector('.image-label');
+
+        const src =
+            img.src;
+
+        const lastSlash =
+            src.lastIndexOf('/');
+
+        const dir =
+            lastSlash !== -1 ? src.slice(0, lastSlash + 1) : '';
+
+        const filename =
+            label ? label.textContent.trim() : extractImageId(src);
+
+        pairs.push('ITEMIMAGEURL' + (idx + 1) + '=' + dir + filename);
+
+    });
+
+    return pairs;
+
+}
+
+function buildRowUrlString(row){
+
+    return getRowUrlPairs(row).join(',');
+
+}
+
+function refreshRowOutput(row){
+
+    if(row.dataset.manuallyEdited === 'true') return;
+
+    const box =
+        row.querySelector('.set-output-box');
+
+    if(!box) return;
+
+    const newString =
+        buildRowUrlString(row);
+
+    box.value = newString;
+
+    const badge =
+        row.querySelector('.set-output-dirty-badge');
+
+    if(badge){
+
+        const lastApplied =
+            row.dataset.lastApplied || '';
+
+        badge.style.display =
+            (newString !== lastApplied) ? 'inline-block' : 'none';
+
+    }
+
+}
+
+/* ============ UNDO SYSTEM ============ */
+
+let undoStack = [];
+
+let redoStack = [];
+
+const DANGEROUS_ACTION_THRESHOLD = 15;
+
+function clearRedoStack(){
+
+    redoStack = [];
+
+}
+
+function pushRedo(action){
+
+    redoStack.push(action);
+
+    if(redoStack.length > 50){
+        redoStack.shift();
+    }
+
+}
+
+function pushUndo(action){
+
+    undoStack.push(action);
+
+    if(undoStack.length > 50){
+        undoStack.shift();
+    }
+
+}
+
+function undoLastAction(){
+
+    if(undoStack.length === 0) return;
+
+    const action =
+        undoStack.pop();
+
+    if(!action) return;
+
+    if(action.type === 'rename'){
+
+        if(action.element){
+            action.element.textContent = action.previousText;
+            action.element.classList.remove('renamed-label');
+        }
+
+        pushRedo(action);
+
+        updateStats();
+
+        return;
+
+    }
+
+    if(action.type === 'batch'){
+
+        (action.entries || []).forEach(entry => {
+            if(entry.element){
+                entry.element.textContent = entry.previousText;
+            }
+        });
+
+        pushRedo(action);
+
+        updateStats();
+
+        return;
+
+    }
+
+    if(!action.parent) return;
+
+    if(
+        action.nextSibling &&
+        action.nextSibling.parentNode === action.parent
+    ){
+        action.parent.insertBefore(action.element, action.nextSibling);
+    }else{
+        action.parent.appendChild(action.element);
+    }
+
+    if(action.type === 'set'){
+        projectedTotalSets++;
+        projectedTotalImages += (action.imageCount || 0);
+    }else if(action.type === 'image'){
+        projectedTotalImages++;
+    }
+
+    pushRedo(action);
+
+    updateStats();
+
+}
+
+function redoLastAction(){
+
+    if(redoStack.length === 0) return;
+
+    const action =
+        redoStack.pop();
+
+    if(!action) return;
+
+    if(action.type === 'rename'){
+
+        if(action.element){
+            action.element.textContent = action.newText;
+            action.element.classList.add('renamed-label');
+        }
+
+        undoStack.push(action);
+
+        updateStats();
+
+        return;
+
+    }
+
+    if(action.type === 'batch'){
+
+        (action.entries || []).forEach(entry => {
+            if(entry.element){
+                entry.element.textContent = entry.newText;
+            }
+        });
+
+        undoStack.push(action);
+
+        updateStats();
+
+        return;
+
+    }
+
+    // image/set deletion redo = remove it again
+    if(action.element && action.element.parentNode){
+        action.element.parentNode.removeChild(action.element);
+    }
+
+    if(action.type === 'set'){
+        projectedTotalSets--;
+        projectedTotalImages -= (action.imageCount || 0);
+    }else if(action.type === 'image'){
+        projectedTotalImages--;
+    }
+
+    undoStack.push(action);
+
+    updateStats();
+
+}
+
+/* ============ AUTO-RENUMBER ON REORDER ============ */
+/*
+   Detects the "position token" in a filename (either "master" or a
+   sequence number like "02", "03") and rewrites it to match the image's
+   new position after a drag-and-drop reorder within a set. Position 1
+   becomes "master", position 2 becomes "02", position 3 becomes "03", etc.
+   Only touches the DISPLAY LABEL (the source URL can't be changed since
+   it's hosted remotely) — same rule as the rename command.
+*/
+
+const POSITION_TOKEN_REGEX = /_(master|\d+)(?=_|$)/i;
+
+function getPositionNumber(item){
+
+    const name =
+        getItemDisplayName(item);
+
+    const dotIdx =
+        name.lastIndexOf('.');
+
+    const namePart =
+        dotIdx !== -1 ? name.slice(0, dotIdx) : name;
+
+    const match =
+        namePart.match(POSITION_TOKEN_REGEX);
+
+    if(!match) return null;
+
+    if(/master/i.test(match[1])) return null;
+
+    return parseInt(match[1], 10);
+
+}
+
+function buildPositionToken(indexInSet){
+
+    if(indexInSet === 0){
+        return '_master';
+    }
+
+    const num =
+        (indexInSet + 1).toString().padStart(2, '0');
+
+    return '_' + num;
+
+}
+
+function renumberSetSequence(rowContainer){
+
+    const items =
+        Array.from(rowContainer.querySelectorAll('.image-item'));
+
+    const batch = [];
+
+    items.forEach((item, index) => {
+
+        const labelElem =
+            item.querySelector('.image-label');
+
+        if(!labelElem) return;
+
+        const currentText =
+            labelElem.textContent;
+
+        const dotIdx =
+            currentText.lastIndexOf('.');
+
+        const namePart =
+            dotIdx !== -1 ? currentText.slice(0, dotIdx) : currentText;
+
+        const ext =
+            dotIdx !== -1 ? currentText.slice(dotIdx) : '';
+
+        if(!POSITION_TOKEN_REGEX.test(namePart)){
+            return; // no confident position token found — leave this label untouched
+        }
+
+        const newToken =
+            buildPositionToken(index);
+
+        const newNamePart =
+            namePart.replace(POSITION_TOKEN_REGEX, newToken);
+
+        const newText =
+            newNamePart + ext;
+
+        if(newText === currentText) return;
+
+        batch.push({
+            element:labelElem,
+            previousText:currentText,
+            newText:newText
+        });
+
+        labelElem.textContent = newText;
+        labelElem.classList.add('renamed-label');
+
+    });
+
+    if(batch.length > 0){
+        pushUndo({
+            type:'batch',
+            entries:batch
+        });
+        clearRedoStack();
+    }
+
+}
+
+document.addEventListener('keydown', function(e){
+
+    const key =
+        e.key.toLowerCase();
+
+    const activeTag =
+        document.activeElement
+        ? document.activeElement.tagName
+        : '';
+
+    const isTypingField =
+        activeTag === 'TEXTAREA' || activeTag === 'INPUT';
+
+    if((e.ctrlKey || e.metaKey) && key === 'z' && e.shiftKey){
+
+        if(isTypingField) return;
+
+        e.preventDefault();
+
+        redoLastAction();
+
+        return;
+
+    }
+
+    if((e.ctrlKey || e.metaKey) && key === 'y'){
+
+        if(isTypingField) return;
+
+        e.preventDefault();
+
+        redoLastAction();
+
+        return;
+
+    }
+
+    if((e.ctrlKey || e.metaKey) && key === 'z'){
+
+        if(isTypingField) return;
+
+        e.preventDefault();
+
+        undoLastAction();
+
+    }
+
+});
+
+/* ============ PREVIEW MODAL ============ */
+
+let currentGallery = [];
+let currentIndex = 0;
+
+let zoomScale = 1;
+let panX = 0;
+let panY = 0;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let panStartX = 0;
+let panStartY = 0;
+let lastTouchDistance = null;
+
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 5;
+
+function applyZoomTransform(){
+
+    const img =
+        document.getElementById('previewImage');
+
+    img.style.transform =
+        'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoomScale + ')';
+
+    img.style.cursor =
+        zoomScale > 1 ? 'grab' : 'zoom-in';
+
+}
+
+function resetZoom(){
+
+    zoomScale = 1;
+    panX = 0;
+    panY = 0;
+
+    const img =
+        document.getElementById('previewImage');
+
+    img.style.transition =
+        'transform .15s ease-out';
+
+    applyZoomTransform();
+
+}
+
+function getTouchDistance(t1, t2){
+
+    const dx =
+        t1.clientX - t2.clientX;
+
+    const dy =
+        t1.clientY - t2.clientY;
+
+    return Math.sqrt(dx * dx + dy * dy);
+
+}
+
+function openPreview(gallery, index){
+
+    currentGallery = gallery;
+    currentIndex = index;
+
+    document.getElementById('previewModal').classList.add('active');
+
+    renderPreview();
+
+}
+
+function closePreview(){
+
+    document.getElementById('previewModal').classList.remove('active');
+
+}
+
+function renderPreview(){
+
+    if(currentGallery.length === 0){
+        closePreview();
+        return;
+    }
+
+    resetEnlargeState();
+
+    const url =
+        currentGallery[currentIndex];
+
+    document.getElementById('previewImage').src = url;
+
+    resetZoom();
+
+    document.getElementById('previewLabel').textContent =
+        extractImageId(url);
+
+    document.getElementById('previewCounter').textContent =
+        (currentIndex + 1) + ' / ' + currentGallery.length + '  \u2022  ';
+
+    const thumbsContainer =
+        document.getElementById('previewThumbnails');
+
+    thumbsContainer.innerHTML = '';
+
+    currentGallery.forEach((thumbUrl, i) => {
+
+        const thumb =
+            document.createElement('img');
+
+        thumb.src = thumbUrl;
+
+        thumb.className =
+            'preview-thumb' + (i === currentIndex ? ' active-thumb' : '');
+
+        thumb.addEventListener('click', function(){
+            currentIndex = i;
+            renderPreview();
+        });
+
+        thumbsContainer.appendChild(thumb);
+
+    });
+
+}
+
+function previewNext(){
+    if(currentGallery.length === 0) return;
+    currentIndex = (currentIndex + 1) % currentGallery.length;
+    renderPreview();
+}
+
+function previewPrev(){
+    if(currentGallery.length === 0) return;
+    currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+    renderPreview();
+}
+
+function flashButton(btn, tempText){
+
+    const original =
+        btn.innerHTML;
+
+    btn.innerHTML = tempText;
+
+    setTimeout(function(){
+        btn.innerHTML = original;
+    }, 1000);
+
+}
+
+let copyToastTimer = null;
+
+function showCopyToast(message){
+
+    const toast =
+        document.getElementById('copyToast');
+
+    if(!toast) return;
+
+    toast.textContent = message;
+
+    toast.classList.add('show');
+
+    clearTimeout(copyToastTimer);
+
+    copyToastTimer = setTimeout(function(){
+        toast.classList.remove('show');
+    }, 2500);
+
+}
+
+document.getElementById('previewCloseBtn')
+.addEventListener('click', closePreview);
+
+document.getElementById('previewNextBtn')
+.addEventListener('click', previewNext);
+
+document.getElementById('previewPrevBtn')
+.addEventListener('click', previewPrev);
+
+document.getElementById('previewModal')
+.addEventListener('click', function(e){
+    if(e.target === this){
+        closePreview();
+    }
+});
+
+document.getElementById('previewCopyUrlBtn')
+.addEventListener('click', function(){
+
+    const url =
+        currentGallery[currentIndex];
+
+    navigator.clipboard.writeText(url);
+
+    window.postMessage({
+        type:"KP360_URL_MEMORY",
+        urls:[url]
+    },"*");
+
+    flashButton(this, '&#9989; Copied!');
+
+});
+
+document.getElementById('previewCopyIdBtn')
+.addEventListener('click', function(){
+
+    const url =
+        currentGallery[currentIndex];
+
+    const id =
+        extractImageId(url);
+
+    navigator.clipboard.writeText(id);
+
+    flashButton(this, '&#9989; Copied!');
+
+});
+
+document.getElementById('previewResetZoomBtn')
+.addEventListener('click', resetZoom);
+
+/* ---- preview enlarge panel ---- */
+
+let enlargeOriginalUrl = null;
+
+let enlargedBlob = null;
+
+let enlargedFilename = '';
+
+function setEnlargeStatus(message){
+
+    const el =
+        document.getElementById('previewEnlargeStatus');
+
+    if(el) el.textContent = message || '';
+
+}
+
+function resetEnlargeState(){
+
+    enlargeOriginalUrl = null;
+    enlargedBlob = null;
+    enlargedFilename = '';
+
+    document.getElementById('previewUndoEnlargeBtn').disabled = true;
+    document.getElementById('previewDownloadEnlargedBtn').disabled = true;
+
+    setEnlargeStatus('');
+
+}
+
+document.getElementById('previewEnlargeBtn')
+.addEventListener('click', async function(){
+
+    if(currentGallery.length === 0) return;
+
+    const url =
+        currentGallery[currentIndex];
+
+    const targetW =
+        parseInt(document.getElementById('enlargeWidth').value, 10) || 1500;
+
+    const targetH =
+        parseInt(document.getElementById('enlargeHeight').value, 10) || 1500;
+
+    const marginIn =
+        parseFloat(document.getElementById('enlargeMarginIn').value) || 0;
+
+    const dpi =
+        parseInt(document.getElementById('enlargeDpi').value, 10) || 96;
+
+    const marginPx =
+        marginIn * dpi;
+
+    if(marginPx * 2 >= Math.min(targetW, targetH)){
+        setEnlargeStatus('Margin is too large for that canvas size — reduce the margin or increase width/height.');
+        return;
+    }
+
+    setEnlargeStatus('Enlarging...');
+
+    try{
+
+        const blob =
+            await canvasPadImageBlob(url, targetW, targetH, marginPx);
+
+        if(!enlargeOriginalUrl) enlargeOriginalUrl = url;
+
+        enlargedBlob = blob;
+
+        const objectUrl =
+            URL.createObjectURL(blob);
+
+        document.getElementById('previewImage').src = objectUrl;
+
+        const baseName =
+            extractImageId(url).replace(/\.[^.]+$/, '');
+
+        enlargedFilename = baseName + '_' + targetW + 'x' + targetH + '.png';
+
+        document.getElementById('previewUndoEnlargeBtn').disabled = false;
+        document.getElementById('previewDownloadEnlargedBtn').disabled = false;
+
+        setEnlargeStatus('Enlarged to ' + targetW + '\u00D7' + targetH + ' — preview updated. Not saved until you download.');
+
+    }catch(e){
+
+        setEnlargeStatus('Couldn\'t load that image (cross-origin restrictions) — try opening it in a new tab instead.');
+
+    }
+
+});
+
+document.getElementById('previewUndoEnlargeBtn')
+.addEventListener('click', function(){
+
+    if(enlargeOriginalUrl){
+        document.getElementById('previewImage').src = enlargeOriginalUrl;
+    }
+
+    enlargedBlob = null;
+
+    document.getElementById('previewUndoEnlargeBtn').disabled = true;
+    document.getElementById('previewDownloadEnlargedBtn').disabled = true;
+
+    setEnlargeStatus('Reverted to original size — adjust the values and enlarge again anytime.');
+
+});
+
+document.getElementById('previewDownloadEnlargedBtn')
+.addEventListener('click', function(){
+
+    if(!enlargedBlob) return;
+
+    const objectUrl =
+        URL.createObjectURL(enlargedBlob);
+
+    const a =
+        document.createElement('a');
+
+    a.href = objectUrl;
+    a.download = enlargedFilename || 'enlarged.png';
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(objectUrl);
+
+    setEnlargeStatus('Downloaded ' + enlargedFilename);
+
+});
+
+const previewImageWrap =
+    document.getElementById('previewImageWrap');
+
+const previewImageEl =
+    document.getElementById('previewImage');
+
+previewImageWrap.addEventListener('wheel', function(e){
+
+    e.preventDefault();
+
+    const delta =
+        e.deltaY < 0 ? 0.2 : -0.2;
+
+    zoomScale =
+        Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomScale + delta));
+
+    if(zoomScale === MIN_ZOOM){
+        panX = 0;
+        panY = 0;
+    }
+
+    previewImageEl.style.transition =
+        'transform .1s ease-out';
+
+    applyZoomTransform();
+
+}, {passive:false});
+
+previewImageEl.addEventListener('dblclick', function(){
+
+    if(zoomScale > MIN_ZOOM){
+        resetZoom();
+    }else{
+        zoomScale = 2.5;
+        previewImageEl.style.transition =
+            'transform .15s ease-out';
+        applyZoomTransform();
+    }
+
+});
+
+previewImageWrap.addEventListener('mousedown', function(e){
+
+    if(zoomScale <= MIN_ZOOM) return;
+
+    isDragging = true;
+
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+
+    panStartX = panX;
+    panStartY = panY;
+
+    previewImageEl.style.transition = 'none';
+
+    e.preventDefault();
+
+});
+
+document.addEventListener('mousemove', function(e){
+
+    if(!isDragging) return;
+
+    panX = panStartX + (e.clientX - dragStartX);
+    panY = panStartY + (e.clientY - dragStartY);
+
+    applyZoomTransform();
+
+});
+
+document.addEventListener('mouseup', function(){
+
+    if(isDragging){
+        isDragging = false;
+        previewImageEl.style.transition = 'transform .1s ease-out';
+    }
+
+});
+
+previewImageWrap.addEventListener('touchstart', function(e){
+
+    if(e.touches.length === 2){
+
+        lastTouchDistance =
+            getTouchDistance(e.touches[0], e.touches[1]);
+
+    }else if(e.touches.length === 1 && zoomScale > MIN_ZOOM){
+
+        isDragging = true;
+
+        dragStartX = e.touches[0].clientX;
+        dragStartY = e.touches[0].clientY;
+
+        panStartX = panX;
+        panStartY = panY;
+
+        previewImageEl.style.transition = 'none';
+
+    }
+
+}, {passive:true});
+
+previewImageWrap.addEventListener('touchmove', function(e){
+
+    if(e.touches.length === 2 && lastTouchDistance){
+
+        const newDistance =
+            getTouchDistance(e.touches[0], e.touches[1]);
+
+        const ratio =
+            newDistance / lastTouchDistance;
+
+        zoomScale =
+            Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoomScale * ratio));
+
+        lastTouchDistance = newDistance;
+
+        if(zoomScale === MIN_ZOOM){
+            panX = 0;
+            panY = 0;
+        }
+
+        previewImageEl.style.transition = 'none';
+
+        applyZoomTransform();
+
+    }else if(e.touches.length === 1 && isDragging){
+
+        panX = panStartX + (e.touches[0].clientX - dragStartX);
+        panY = panStartY + (e.touches[0].clientY - dragStartY);
+
+        applyZoomTransform();
+
+    }
+
+}, {passive:true});
+
+previewImageWrap.addEventListener('touchend', function(){
+
+    isDragging = false;
+    lastTouchDistance = null;
+
+    previewImageEl.style.transition = 'transform .1s ease-out';
+
+});
+
+document.addEventListener('keydown', function(e){
+
+    if(!document.getElementById('previewModal').classList.contains('active')){
+        return;
+    }
+
+    if(e.key === 'Escape'){
+        closePreview();
+    }
+
+    if(e.key === 'ArrowRight'){
+        previewNext();
+    }
+
+    if(e.key === 'ArrowLeft'){
+        previewPrev();
+    }
+
+});
+
+/* ============ COMMAND AGENT ============ */
+/*
+   A lightweight, fully client-side command parser — no external API calls.
+   It simply matches plain-English patterns and triggers the *same* buttons
+   and functions already wired up above (delete-btn, delete-set-btn,
+   copy buttons, search box), so behavior always matches manual clicking.
+*/
+
+function escapeRegExp(str){
+
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+}
+
+/* ---- show / filter helpers ---- */
+
+/* ============ LOAD ALL (PAGINATION BYPASS) ============ */
+/*
+   Large pastes render in batches (SETS_PER_BATCH) for performance, via a
+   "Load N more sets" button. That means commands like "download all X"
+   or the XLSX export could silently miss sets that haven't been rendered
+   yet. This forces every remaining batch to render immediately by
+   synchronously clicking through the load-more button until it's gone.
+*/
+
+function loadAllRemainingSets(){
+
+    const before =
+        document.querySelectorAll('.excel-row').length;
+
+    let safety = 0;
+
+    while(document.getElementById('loadMoreSetsBtn') && safety < 2000){
+        document.getElementById('loadMoreSetsBtn').click();
+        safety++;
+    }
+
+    const after =
+        document.querySelectorAll('.excel-row').length;
+
+    return after - before;
+
+}
+
+function clearFilterVisibility(){
+
+    document.querySelectorAll('.excel-row').forEach(row => {
+        row.style.display = '';
+    });
+
+    document.querySelectorAll('.image-item').forEach(item => {
+        item.style.display = '';
+    });
+
+}
+
+function resetSearchBoxUI(){
+
+    const box =
+        document.getElementById('searchBox');
+
+    if(!box) return;
+
+    box.value = '';
+
+    const wrap =
+        box.closest('.search-wrap');
+
+    if(wrap) wrap.classList.remove('has-value');
+
+}
+
+function syncSearchBoxToPattern(pattern){
+
+    const box =
+        document.getElementById('searchBox');
+
+    if(!box) return;
+
+    box.value = pattern;
+
+    const wrap =
+        box.closest('.search-wrap');
+
+    if(wrap) wrap.classList.toggle('has-value', pattern.trim() !== '');
+
+}
+
+function clearAgentFilters(){
+
+    clearFilterVisibility();
+
+    resetSearchBoxUI();
+
+    setFilterActiveState(false);
+
+}
+
+function filterBySetSize(targetCount){
+
+    clearFilterVisibility();
+
+    let matchedSets = 0;
+
+    document.querySelectorAll('.excel-row').forEach(row => {
+
+        const count =
+            row.querySelectorAll('.image-item').length;
+
+        if(count === targetCount){
+            row.style.display = '';
+            matchedSets++;
+        }else{
+            row.style.display = 'none';
+        }
+
+    });
+
+    setFilterActiveState(true);
+
+    return matchedSets;
+
+}
+
+function filterItemsByPredicate(predicate){
+
+    clearFilterVisibility();
+
+    let matchedCount = 0;
+
+    document.querySelectorAll('.excel-row').forEach(row => {
+
+        let rowHasMatch = false;
+
+        row.querySelectorAll('.image-item').forEach(item => {
+
+            if(predicate(item)){
+                item.style.display = '';
+                rowHasMatch = true;
+                matchedCount++;
+            }else{
+                item.style.display = 'none';
+            }
+
+        });
+
+        row.style.display =
+            rowHasMatch ? '' : 'none';
+
+    });
+
+    setFilterActiveState(true);
+
+    return matchedCount;
+
+}
+
+/* ---- download helpers ---- */
+
+/* ============ ENLARGE (CANVAS-PAD TO TARGET SIZE) ============ */
+/*
+   "Enlarging" here means placing the original photo, unscaled in aspect
+   ratio (never cropped), centered on a new white canvas of the requested
+   size with a real margin around it — the way you'd resize a canvas in
+   Canva rather than upscaling/stretching the pixels themselves.
+*/
+
+async function loadImageElement(url, signal){
+
+    const response =
+        await fetch(url, {mode:'cors', signal:signal});
+
+    if(!response.ok) throw new Error('bad response');
+
+    const blob =
+        await response.blob();
+
+    const objectUrl =
+        URL.createObjectURL(blob);
+
+    try{
+
+        const img =
+            new Image();
+
+        const loaded =
+            new Promise((resolve, reject) => {
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error('image decode failed'));
+            });
+
+        img.src = objectUrl;
+
+        await loaded;
+
+        return img;
+
+    }finally{
+        URL.revokeObjectURL(objectUrl);
+    }
+
+}
+
+async function canvasPadImageBlob(url, targetW, targetH, marginPx, signal){
+
+    const img =
+        await loadImageElement(url, signal);
+
+    const canvas =
+        document.createElement('canvas');
+
+    canvas.width = targetW;
+    canvas.height = targetH;
+
+    const ctx =
+        canvas.getContext('2d');
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    const contentW =
+        Math.max(1, targetW - marginPx * 2);
+
+    const contentH =
+        Math.max(1, targetH - marginPx * 2);
+
+    // "contain" fit — scale to fit fully inside the margin box, never
+    // cropping any part of the original photo.
+    const scale =
+        Math.min(contentW / img.naturalWidth, contentH / img.naturalHeight);
+
+    const drawW =
+        img.naturalWidth * scale;
+
+    const drawH =
+        img.naturalHeight * scale;
+
+    const drawX =
+        (targetW - drawW) / 2;
+
+    const drawY =
+        (targetH - drawH) / 2;
+
+    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+    return new Promise(resolve => {
+        canvas.toBlob(resolve, 'image/png');
+    });
+
+}
+
+
+
+/* ============ STOP / CANCEL OPERATION ============ */
+
+let stopRequested = false;
+
+let isOperationRunning = false;
+
+let currentOperationAbortController = null;
+
+function beginCancellableOperation(){
+
+    stopRequested = false;
+
+    isOperationRunning = true;
+
+    currentOperationAbortController = new AbortController();
+
+    return currentOperationAbortController;
+
+}
+
+function endCancellableOperation(){
+
+    isOperationRunning = false;
+
+    currentOperationAbortController = null;
+
+}
+
+function requestStopOperation(){
+
+    if(!isOperationRunning){
+        return 'Nothing is currently running.';
+    }
+
+    stopRequested = true;
+
+    if(currentOperationAbortController){
+        currentOperationAbortController.abort();
+    }
+
+    return 'Stopping the current operation...';
+
+}
+
+async function downloadSingleImage(url, filename, signal){
+
+    try{
+
+        const response =
+            await fetch(url, {mode:'cors', signal:signal});
+
+        if(!response.ok) throw new Error('bad response');
+
+        const blob =
+            await response.blob();
+
+        const blobUrl =
+            URL.createObjectURL(blob);
+
+        const a =
+            document.createElement('a');
+
+        a.href = blobUrl;
+        a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        URL.revokeObjectURL(blobUrl);
+
+        return true;
+
+    }catch(e){
+
+        if(stopRequested) return false;
+
+        // Cross-origin or network restriction — fall back to opening the
+        // image in a new tab so the user can save it manually.
+        window.open(url, '_blank');
+
+        return false;
+
+    }
+
+}
+
+async function downloadMatchedImagesIndividually(matchedItems){
+
+    const controller =
+        beginCancellableOperation();
+
+    let successCount = 0;
+
+    let processedCount = 0;
+
+    for(const item of matchedItems){
+
+        if(stopRequested) break;
+
+        const img =
+            item.querySelector('img');
+
+        if(!img) continue;
+
+        const filename =
+            getItemDisplayName(item) || extractImageId(img.src);
+
+        const ok =
+            await downloadSingleImage(img.src, filename, controller.signal);
+
+        processedCount++;
+
+        if(ok) successCount++;
+
+        if(stopRequested) break;
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+    }
+
+    const cancelled =
+        stopRequested;
+
+    endCancellableOperation();
+
+    return {mode:'individual', successCount, total:matchedItems.length, processedCount, cancelled};
+
+}
+
+async function enlargeMatchedImages(matchedItems, targetW, targetH, marginPx){
+
+    if(typeof JSZip === 'undefined'){
+        return {mode:'zip-failed', successCount:0, total:matchedItems.length, processedCount:0, cancelled:false, noZip:true};
+    }
+
+    const controller =
+        beginCancellableOperation();
+
+    const zip =
+        new JSZip();
+
+    let successCount = 0;
+
+    let processedCount = 0;
+
+    const usedNames =
+        new Set();
+
+    for(const item of matchedItems){
+
+        if(stopRequested) break;
+
+        const img =
+            item.querySelector('img');
+
+        if(!img) continue;
+
+        let filename =
+            (getItemDisplayName(item) || extractImageId(img.src)).replace(/\.[^.]+$/, '');
+
+        filename += '_' + targetW + 'x' + targetH + '.png';
+
+        if(usedNames.has(filename)){
+            filename = Date.now() + '_' + filename;
+        }
+
+        usedNames.add(filename);
+
+        try{
+
+            const blob =
+                await canvasPadImageBlob(img.src, targetW, targetH, marginPx, controller.signal);
+
+            zip.file(filename, blob);
+
+            successCount++;
+
+        }catch(e){
+            // couldn't fetch/decode this one (cross-origin, or the
+            // operation was stopped) — it's left out of the zip.
+        }
+
+        processedCount++;
+
+    }
+
+    const cancelled =
+        stopRequested;
+
+    if(successCount === 0){
+        endCancellableOperation();
+        return {mode:'zip-failed', successCount:0, total:matchedItems.length, processedCount, cancelled};
+    }
+
+    const zipBlob =
+        await zip.generateAsync({type:'blob'});
+
+    const zipUrl =
+        URL.createObjectURL(zipBlob);
+
+    const a =
+        document.createElement('a');
+
+    a.href = zipUrl;
+    a.download = cancelled ? 'enlarged_images_partial.zip' : 'enlarged_images.zip';
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(zipUrl);
+
+    endCancellableOperation();
+
+    return {mode:'zip', successCount, total:matchedItems.length, processedCount, cancelled};
+
+}
+
+async function downloadMatchedImages(matchedItems){
+
+    if(typeof JSZip === 'undefined'){
+        return downloadMatchedImagesIndividually(matchedItems);
+    }
+
+    const controller =
+        beginCancellableOperation();
+
+    const zip =
+        new JSZip();
+
+    let successCount = 0;
+
+    let processedCount = 0;
+
+    const usedNames =
+        new Set();
+
+    for(const item of matchedItems){
+
+        if(stopRequested) break;
+
+        const img =
+            item.querySelector('img');
+
+        if(!img) continue;
+
+        let filename =
+            getItemDisplayName(item) || extractImageId(img.src);
+
+        if(usedNames.has(filename)){
+            filename = Date.now() + '_' + filename;
+        }
+
+        usedNames.add(filename);
+
+        try{
+
+            const response =
+                await fetch(img.src, {mode:'cors', signal:controller.signal});
+
+            if(!response.ok) throw new Error('bad response');
+
+            const blob =
+                await response.blob();
+
+            zip.file(filename, blob);
+
+            successCount++;
+
+        }catch(e){
+            // couldn't fetch this one across origins (or the operation was
+            // stopped) — it's simply left out of the zip.
+        }
+
+        processedCount++;
+
+    }
+
+    const cancelled =
+        stopRequested;
+
+    if(successCount === 0){
+        endCancellableOperation();
+        return {mode:'zip-failed', successCount:0, total:matchedItems.length, processedCount, cancelled};
+    }
+
+    const zipBlob =
+        await zip.generateAsync({type:'blob'});
+
+    const zipUrl =
+        URL.createObjectURL(zipBlob);
+
+    const a =
+        document.createElement('a');
+
+    a.href = zipUrl;
+    a.download = cancelled ? 'images_partial.zip' : 'images.zip';
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(zipUrl);
+
+    endCancellableOperation();
+
+    return {mode:'zip', successCount, total:matchedItems.length, processedCount, cancelled};
+
+}
+
+function stripFillerPrefix(input){
+
+    let result =
+        input.trim();
+
+    const fillerPatterns = [
+        /^(hey|hi|ok|okay)\s+carro[,:]?\s*/i,
+        /^carro[,:]?\s*/i,
+        /^(please|pls|kindly)\s+/i,
+        /^(can|could|would)\s+you\s+(please\s+)?/i
+    ];
+
+    let changed = true;
+
+    while(changed){
+
+        changed = false;
+
+        for(const pattern of fillerPatterns){
+
+            const stripped =
+                result.replace(pattern, '');
+
+            if(stripped !== result){
+                result = stripped;
+                changed = true;
+            }
+
+        }
+
+    }
+
+    return result.trim();
+
+}
+
+let pendingAgentConfirmation = null;
+
+function processAgentCommand(rawText){
+
+    const text =
+        stripFillerPrefix(rawText);
+
+    let lower =
+        text.toLowerCase();
+
+    lower = lower
+        .replace(/\bdupes\b/g, 'duplicates')
+        .replace(/\bdupe\b/g, 'duplicate');
+
+    if(pendingAgentConfirmation){
+
+        const confirmation =
+            pendingAgentConfirmation;
+
+        pendingAgentConfirmation = null;
+
+        if(/^(confirm|yes|y|yes delete|yes please)$/.test(lower)){
+            return confirmation.execute();
+        }
+
+        // anything else cancels the pending action; fall through and
+        // process this message as a brand-new command instead of
+        // silently discarding it.
+
+    }
+
+    if(text === ''){
+        return "Type a command, e.g. \"delete all 02_v2.JPG\".";
+    }
+
+    // stop / cancel — checked early so it always goes through
+    if(/^(stop|cancel)(?: operation| the operation)?$/.test(lower)){
+        return requestStopOperation();
+    }
+
+    // load all — explicit force-render of every paginated batch
+    if(/^load all( sets| the sets| remaining sets)?$/.test(lower)){
+
+        const loaded =
+            loadAllRemainingSets();
+
+        return loaded === 0
+            ? 'Everything is already loaded.'
+            : ('Loaded ' + loaded + ' more set' + (loaded === 1 ? '' : 's') + ' — everything is now rendered.');
+
+    }
+
+    // Most commands search or act across "all" sets/images, but large
+    // pastes only render in batches for performance. Auto-load everything
+    // first so e.g. "download all 02_v2.JPG" or "export manifest" isn't
+    // silently limited to whatever batch happened to be on screen.
+    if(!/^(undo|redo|help|commands)$/.test(lower)){
+        loadAllRemainingSets();
+    }
+
+    // undo
+    if(/^undo$/.test(lower)){
+        const hadHistory = undoStack.length > 0;
+        undoLastAction();
+        return hadHistory ? 'Last action undone.' : 'Nothing to undo.';
+    }
+
+    // help
+    if(lower === 'help' || lower === 'commands'){
+        return '📁 SHOW / FILTER\n'
+            + '• show all sets with <N> images\n'
+            + '• show all <text>  (e.g. show all PADF)\n'
+            + '• show all starting with <text>\n'
+            + '• show all ending with <text>\n'
+            + '• show all containing <text>\n'
+            + '• show all duplicates\n'
+            + '• show all broken\n'
+            + '• show sets missing master\n'
+            + '• show mismatched sets\n'
+            + '• show all  (clears any active filter)\n\n'
+            + '⬇️ DOWNLOAD / EXPORT\n'
+            + '• download all <text>  (e.g. download all 02_v2.JPG images)\n'
+            + '• export manifest\n\n'
+            + '\u2921 ENLARGE\n'
+            + '• enlarge all <text> into WxH  (e.g. enlarge all 03_v2.JPG into 1500x1500)\n'
+            + '• enlarge all <from> to <to> into WxH  (e.g. enlarge all 05_v2 to 07_v2 into 1500x1500)\n\n'
+            + '🗑️ DELETE\n'
+            + '• delete all <text>\n'
+            + '• delete duplicates\n'
+            + '• delete broken\n'
+            + '• delete set <n>\n'
+            + '  (deleting 15+ images asks you to confirm first)\n\n'
+            + '✏️ RENAME\n'
+            + '• rename id <old> into <new>\n'
+            + '• rename all <old> into <new>\n\n'
+            + '📋 COPY\n'
+            + '• copy set <n> urls\n'
+            + '• copy all <text> url  (e.g. copy all 03_v2.JPG url)\n'
+            + '• copy all urls\n\n'
+            + '⏹️ CONTROL\n'
+            + '• stop  /  cancel  (halts a download in progress)\n'
+            + '• load all  (renders every remaining set — most commands do this automatically)\n\n'
+            + '🔎 OTHER\n'
+            + '• search <text>\n'
+            + '• stats\n'
+            + '• undo  /  redo (or Ctrl+Z / Ctrl+Shift+Z)';
+    }
+
+    // stats
+    if(/^(stats|how many images)$/.test(lower)){
+        const sets = document.querySelectorAll('.excel-row').length;
+        const images = document.querySelectorAll('.image-item').length;
+        const dups = document.getElementById('duplicateCount').textContent;
+        const brokenEl = document.getElementById('brokenCount');
+        const broken = brokenEl ? brokenEl.textContent : '0';
+        return sets + ' sets, ' + images + ' images, ' + dups + ' duplicates, ' + broken + ' broken.';
+    }
+
+    // how many duplicates / how many broken
+    if(/^how many duplicates?$/.test(lower)){
+        return document.getElementById('duplicateCount').textContent + ' duplicate image(s) found.';
+    }
+
+    if(/^how many broken( images)?$/.test(lower)){
+        const brokenEl = document.getElementById('brokenCount');
+        return (brokenEl ? brokenEl.textContent : '0') + ' broken image(s) found.';
+    }
+
+    // export manifest
+    if(/^export manifest$/.test(lower)){
+
+        const rows =
+            document.querySelectorAll('.excel-row');
+
+        const lines =
+            ['Set,Position,Original Filename,Current Filename,Current URL'];
+
+        rows.forEach((row, rowIdx) => {
+
+            const items =
+                row.querySelectorAll('.image-item');
+
+            items.forEach((item, idx) => {
+
+                const img =
+                    item.querySelector('img');
+
+                const label =
+                    item.querySelector('.image-label');
+
+                const original =
+                    item.dataset.originalFilename || '';
+
+                const current =
+                    label ? label.textContent.trim() : '';
+
+                const src =
+                    img ? img.src : '';
+
+                lines.push(
+                    [rowIdx + 1, idx + 1, original, current, src].map(csvEscape).join(',')
+                );
+
+            });
+
+        });
+
+        const csv =
+            lines.join('\n');
+
+        const blob =
+            new Blob([csv], {type:'text/csv'});
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const a =
+            document.createElement('a');
+
+        a.href = url;
+        a.download = 'image_manifest.csv';
+
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        URL.revokeObjectURL(url);
+
+        return 'Manifest exported as image_manifest.csv.';
+
+    }
+
+    // show sets missing a master image
+    if(/^show (?:all |me )?sets? missing (?:a |the )?master$/.test(lower)){
+
+        clearFilterVisibility();
+
+        let matchedSets = 0;
+
+        document.querySelectorAll('.excel-row').forEach(row => {
+
+            const hasBadge =
+                Array.from(row.querySelectorAll('.row-badge')).some(b => /no master/i.test(b.textContent));
+
+            row.style.display =
+                hasBadge ? '' : 'none';
+
+            if(hasBadge) matchedSets++;
+
+        });
+
+        resetSearchBoxUI();
+
+        setFilterActiveState(true);
+
+        return matchedSets === 0
+            ? 'No sets are missing a master image.'
+            : ('Showing ' + matchedSets + ' set' + (matchedSets === 1 ? '' : 's') + ' missing a master image.');
+
+    }
+
+    // show mismatched / mixed ID sets
+    if(/^show (?:all |me )?(?:mismatched|mixed)(?: id)? sets?$/.test(lower)){
+
+        clearFilterVisibility();
+
+        let matchedSets = 0;
+
+        document.querySelectorAll('.excel-row').forEach(row => {
+
+            const hasBadge =
+                Array.from(row.querySelectorAll('.row-badge')).some(b => /mixed ids/i.test(b.textContent));
+
+            row.style.display =
+                hasBadge ? '' : 'none';
+
+            if(hasBadge) matchedSets++;
+
+        });
+
+        resetSearchBoxUI();
+
+        setFilterActiveState(true);
+
+        return matchedSets === 0
+            ? 'No sets have mismatched IDs.'
+            : ('Showing ' + matchedSets + ' set' + (matchedSets === 1 ? '' : 's') + ' with mismatched IDs.');
+
+    }
+
+    // show all broken
+    if(/^show (?:all |me )?(?:the )?broken(?: images)?$/.test(lower)){
+
+        const count =
+            filterItemsByPredicate(item => item.getAttribute('data-broken') === 'true');
+
+        resetSearchBoxUI();
+
+        return count === 0
+            ? 'No broken images found.'
+            : ('Showing ' + count + ' broken image' + (count === 1 ? '' : 's') + '.');
+
+    }
+
+    // show all / clear filters (reset)
+    if(/^(show all|show everything|clear filters?|reset filters?)$/.test(lower)){
+        clearAgentFilters();
+        return 'Filters cleared — showing everything.';
+    }
+
+    // show all sets with N images
+    let showSetSizeMatch =
+        lower.match(/^show (?:all |me )?sets? with (\d+) images?$/);
+
+    if(showSetSizeMatch){
+
+        const n =
+            parseInt(showSetSizeMatch[1], 10);
+
+        const matchedSets =
+            filterBySetSize(n);
+
+        resetSearchBoxUI();
+
+        return matchedSets === 0
+            ? ('No sets found with exactly ' + n + ' images.')
+            : ('Showing ' + matchedSets + ' set' + (matchedSets === 1 ? '' : 's') + ' with ' + n + ' images.');
+
+    }
+
+    // show all duplicates
+    if(/^show (?:all |me )?(?:the )?duplicates?$/.test(lower)){
+
+        const count =
+            filterItemsByPredicate(item => item.getAttribute('data-duplicate') === 'true');
+
+        resetSearchBoxUI();
+
+        return count === 0
+            ? 'No duplicate images found.'
+            : ('Showing ' + count + ' duplicate image' + (count === 1 ? '' : 's') + '.');
+
+    }
+
+    // show all starting with <text>
+    let showMatch =
+        text.match(/^show (?:all |me )?(?:images? )?starting with (.+)$/i);
+
+    if(showMatch){
+
+        const pattern =
+            showMatch[1].trim().replace(/^["']|["']$/g, '');
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const count =
+            filterItemsByPredicate(item => getItemDisplayName(item).toLowerCase().startsWith(patternLower));
+
+        syncSearchBoxToPattern(pattern);
+
+        return count === 0
+            ? ('No images starting with "' + pattern + '".')
+            : ('Showing ' + count + ' image' + (count === 1 ? '' : 's') + ' starting with "' + pattern + '".');
+
+    }
+
+    // show all ending with <text>
+    showMatch =
+        text.match(/^show (?:all |me )?(?:images? )?ending with (.+)$/i);
+
+    if(showMatch){
+
+        const pattern =
+            showMatch[1].trim().replace(/^["']|["']$/g, '');
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const count =
+            filterItemsByPredicate(item => getItemDisplayName(item).toLowerCase().endsWith(patternLower));
+
+        syncSearchBoxToPattern(pattern);
+
+        return count === 0
+            ? ('No images ending with "' + pattern + '".')
+            : ('Showing ' + count + ' image' + (count === 1 ? '' : 's') + ' ending with "' + pattern + '".');
+
+    }
+
+    // show all containing <text> / show all <text>  (generic contains — checked last of the "show" patterns)
+    showMatch =
+        text.match(/^show (?:all |me )?(?:images? )?containing (.+)$/i);
+
+    if(!showMatch){
+        showMatch = text.match(/^show (?:all |me )?(.+)$/i);
+    }
+
+    if(showMatch){
+
+        const pattern =
+            showMatch[1].trim().replace(/^["']|["']$/g, '');
+
+        if(pattern === ''){
+            return 'Tell me what to show, e.g. "show all PADF".';
+        }
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const count =
+            filterItemsByPredicate(item => getItemDisplayName(item).toLowerCase().includes(patternLower));
+
+        syncSearchBoxToPattern(pattern);
+
+        return count === 0
+            ? ('No images matching "' + pattern + '" were found.')
+            : ('Showing ' + count + ' image' + (count === 1 ? '' : 's') + ' matching "' + pattern + '".');
+
+    }
+
+    // copy all <pattern> url(s)
+    let copyPatternMatch =
+        text.match(/^copy all (.+?) urls?$/i);
+
+    if(copyPatternMatch){
+
+        const pattern =
+            copyPatternMatch[1].trim().replace(/^["']|["']$/g, '').replace(/\s+images?$/i, '').trim();
+
+        if(pattern === ''){
+            return 'Tell me which images to copy, e.g. "copy all 03_v2.JPG url".';
+        }
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const items =
+            document.querySelectorAll('.image-item');
+
+        const matched = [];
+
+        items.forEach(item => {
+
+            if(item.style.display === 'none') return;
+
+            const name =
+                getItemDisplayName(item).toLowerCase();
+
+            if(name.includes(patternLower)){
+                matched.push(item);
+            }
+
+        });
+
+        if(matched.length === 0){
+            return 'No visible images matching "' + pattern + '" were found.';
+        }
+
+        const urls =
+            matched.map(item => {
+                const img = item.querySelector('img');
+                return img ? img.src : '';
+            }).filter(Boolean);
+
+        navigator.clipboard.writeText(urls.join('\n'));
+
+        return 'Copied ' + urls.length + ' URL' + (urls.length === 1 ? '' : 's') + ' matching "' + pattern + '".';
+
+    }
+
+    // enlarge all <from> to <to> into WxH  (numeric position range)
+    function describeEnlargeResult(result, label, targetW, targetH){
+
+        if(result.noZip){
+            return 'The zip library failed to load, so I can\'t bundle enlarged images right now — check your connection and try again.';
+        }
+
+        if(result.mode === 'zip'){
+
+            let msg =
+                (result.cancelled ? 'Stopped early — enlarged ' : 'Enlarged ')
+                + result.successCount + ' of ' + result.total + ' image(s) matching "' + label
+                + '" to ' + targetW + '×' + targetH + ' and downloaded '
+                + (result.cancelled ? 'enlarged_images_partial.zip.' : 'enlarged_images.zip.');
+
+            if(!result.cancelled && result.successCount < result.total){
+                msg += ' ' + (result.total - result.successCount)
+                    + ' couldn\'t be fetched (cross-origin restrictions) and were left out.';
+            }
+
+            return msg;
+
+        }
+
+        return result.cancelled
+            ? 'Stopped before any images could be enlarged.'
+            : 'Couldn\'t fetch any of the ' + result.total + ' matching image(s) due to cross-origin restrictions.';
+
+    }
+
+    let enlargeRangeMatch =
+        text.match(/^enlarge all (?:images? )?(?:from )?(.+?)\s+to\s+(.+?)\s+into\s+(\d+)\s*[x×]\s*(\d+)$/i);
+
+    if(enlargeRangeMatch){
+
+        const fromRaw =
+            enlargeRangeMatch[1].trim().replace(/[.,]+$/, '');
+
+        const toRaw =
+            enlargeRangeMatch[2].trim().replace(/[.,]+$/, '');
+
+        const targetW =
+            parseInt(enlargeRangeMatch[3], 10);
+
+        const targetH =
+            parseInt(enlargeRangeMatch[4], 10);
+
+        const fromNumMatch =
+            fromRaw.match(/\d+/);
+
+        const toNumMatch =
+            toRaw.match(/\d+/);
+
+        if(!fromNumMatch || !toNumMatch){
+            return 'I need numbered images for a range, e.g. "enlarge all 05_v2 to 07_v2 into 1500x1500".';
+        }
+
+        const fromNum =
+            Math.min(parseInt(fromNumMatch[0], 10), parseInt(toNumMatch[0], 10));
+
+        const toNum =
+            Math.max(parseInt(fromNumMatch[0], 10), parseInt(toNumMatch[0], 10));
+
+        const items =
+            document.querySelectorAll('.image-item');
+
+        const matched = [];
+
+        items.forEach(item => {
+
+            if(item.style.display === 'none') return;
+
+            const posNum =
+                getPositionNumber(item);
+
+            if(posNum !== null && posNum >= fromNum && posNum <= toNum){
+                matched.push(item);
+            }
+
+        });
+
+        if(matched.length === 0){
+            return 'No visible images numbered ' + fromNum + ' through ' + toNum + ' were found.';
+        }
+
+        const marginPx =
+            96; // default 1-inch margin at 96 DPI for agent-driven enlarges
+
+        const executeEnlarge = function(){
+            return enlargeMatchedImages(matched, targetW, targetH, marginPx).then(result =>
+                describeEnlargeResult(result, fromNum + '–' + toNum, targetW, targetH)
+            );
+        };
+
+        if(matched.length > DANGEROUS_ACTION_THRESHOLD){
+            pendingAgentConfirmation = {execute:executeEnlarge};
+            return 'This will enlarge ' + matched.length + ' images (numbered ' + fromNum + '–' + toNum
+                + ') to ' + targetW + '×' + targetH + '. Type "confirm" to proceed, or anything else to cancel.';
+        }
+
+        return executeEnlarge();
+
+    }
+
+    // enlarge all <pattern> into WxH
+    let enlargePatternMatch =
+        text.match(/^enlarge all (?:images? )?(.+?)\s+into\s+(\d+)\s*[x×]\s*(\d+)$/i);
+
+    if(enlargePatternMatch){
+
+        const pattern =
+            enlargePatternMatch[1].trim().replace(/^["']|["']$/g, '').replace(/\s+images?$/i, '').trim();
+
+        const targetW =
+            parseInt(enlargePatternMatch[2], 10);
+
+        const targetH =
+            parseInt(enlargePatternMatch[3], 10);
+
+        if(pattern === ''){
+            return 'Tell me which images to enlarge, e.g. "enlarge all 03_v2.JPG into 1500x1500".';
+        }
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const items =
+            document.querySelectorAll('.image-item');
+
+        const matched = [];
+
+        items.forEach(item => {
+
+            if(item.style.display === 'none') return;
+
+            const name =
+                getItemDisplayName(item).toLowerCase();
+
+            if(name.includes(patternLower)){
+                matched.push(item);
+            }
+
+        });
+
+        if(matched.length === 0){
+            return 'No visible images matching "' + pattern + '" were found.';
+        }
+
+        const marginPx =
+            96;
+
+        const executeEnlarge = function(){
+            return enlargeMatchedImages(matched, targetW, targetH, marginPx).then(result =>
+                describeEnlargeResult(result, pattern, targetW, targetH)
+            );
+        };
+
+        if(matched.length > DANGEROUS_ACTION_THRESHOLD){
+            pendingAgentConfirmation = {execute:executeEnlarge};
+            return 'This will enlarge ' + matched.length + ' images matching "' + pattern
+                + '" to ' + targetW + '×' + targetH + '. Type "confirm" to proceed, or anything else to cancel.';
+        }
+
+        return executeEnlarge();
+
+    }
+
+    // download all <pattern>
+    let downloadMatch =
+        text.match(/^download(?: all)? (.+)$/i);
+
+    if(downloadMatch){
+
+        const pattern =
+            downloadMatch[1].trim().replace(/^["']|["']$/g, '').replace(/\s+images?$/i, '').trim();
+
+        if(pattern === ''){
+            return 'Tell me what to download, e.g. "download all master_v2.JPG".';
+        }
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const items =
+            document.querySelectorAll('.image-item');
+
+        const matched = [];
+
+        items.forEach(item => {
+
+            const visible =
+                item.style.display !== 'none';
+
+            if(!visible) return;
+
+            const name =
+                getItemDisplayName(item).toLowerCase();
+
+            if(name.includes(patternLower)){
+                matched.push(item);
+            }
+
+        });
+
+        if(matched.length === 0){
+            return 'No visible images matching "' + pattern + '" were found to download.';
+        }
+
+        const matchedUrls =
+            matched.map(item => {
+                const img = item.querySelector('img');
+                return img ? img.src : '';
+            }).filter(Boolean);
+
+        // Hand the matched URLs to the KP360 downloader extension, the
+        // same way "Copy Set URLs" / "Copy All URLs" already do — if the
+        // extension is installed, it takes over the actual downloading
+        // (and isn't subject to the same cross-origin fetch restrictions
+        // the in-page zip/individual fallback below runs into).
+        window.postMessage({
+            type:"KP360_URL_MEMORY",
+            urls:matchedUrls
+        },"*");
+
+        const extensionNote =
+            'Sent ' + matchedUrls.length + ' URL' + (matchedUrls.length === 1 ? '' : 's')
+            + ' to the KP360 downloader extension. ';
+
+        return downloadMatchedImages(matched).then(result => {
+
+            if(result.mode === 'zip'){
+
+                let msg =
+                    extensionNote
+                    + (result.cancelled ? 'Also stopped early — downloaded ' : 'Also downloaded ')
+                    + result.successCount + ' of ' + result.total
+                    + ' image(s) matching "' + pattern + '" as ' + (result.cancelled ? 'images_partial.zip.' : 'images.zip.');
+
+                if(!result.cancelled && result.successCount < result.total){
+                    msg += ' ' + (result.total - result.successCount)
+                        + ' couldn\'t be fetched (cross-origin restrictions) and were left out of the zip.';
+                }
+
+                return msg;
+
+            }
+
+            if(result.mode === 'zip-failed'){
+                return extensionNote + (result.cancelled
+                    ? 'The in-page zip was stopped before any images could be added.'
+                    : 'The in-page zip couldn\'t fetch any of the ' + result.total
+                        + ' matching image(s) due to cross-origin restrictions — the extension handoff above is the more reliable path.');
+            }
+
+            let msg =
+                extensionNote
+                + (result.cancelled ? 'Also stopped early — downloaded ' : 'Also downloaded ')
+                + result.successCount + ' of ' + result.total + ' image(s) matching "' + pattern + '".';
+
+            if(!result.cancelled && result.successCount < result.total){
+                msg += ' Some couldn\'t be fetched directly and opened in a new tab instead — right-click the image there and choose "Save Image As".';
+            }
+
+            return msg;
+
+        });
+
+    }
+
+    // rename id <old> into <new> / rename all <old> into <new> / rename <old> to <new>
+    let renameMatch =
+        text.match(/^rename\s+(?:id\s*:?\s*|all\s+)?(.+?)\s+(?:into|to)\s*:?\s*(.+)$/i);
+
+    if(renameMatch){
+
+        const oldText =
+            renameMatch[1].trim().replace(/^["']|["']$/g, '');
+
+        const newText =
+            renameMatch[2].trim().replace(/^["']|["']$/g, '');
+
+        if(oldText === '' || newText === ''){
+            return "I need both the current text and the new text. Try: rename id OLD-ID into NEW-ID";
+        }
+
+        const oldLower =
+            oldText.toLowerCase();
+
+        const replacePattern =
+            new RegExp(escapeRegExp(oldText), 'gi');
+
+        const items =
+            document.querySelectorAll('.image-item');
+
+        const matchedItems = [];
+
+        const affectedRows =
+            new Set();
+
+        items.forEach(item => {
+
+            const img =
+                item.querySelector('img');
+
+            if(!img) return;
+
+            const labelElem =
+                item.querySelector('.image-label');
+
+            if(!labelElem) return;
+
+            const currentLabelText =
+                labelElem.textContent;
+
+            if(!currentLabelText.toLowerCase().includes(oldLower)) return;
+
+            const previousText =
+                currentLabelText;
+
+            const newName =
+                currentLabelText.replace(replacePattern, newText);
+
+            labelElem.textContent = newName;
+            labelElem.classList.add('renamed-label');
+
+            pushUndo({
+                type:'rename',
+                element:labelElem,
+                previousText:previousText,
+                newText:newName
+            });
+
+            clearRedoStack();
+
+            matchedItems.push(item);
+
+            const row =
+                item.closest('.excel-row');
+
+            if(row) affectedRows.add(row);
+
+        });
+
+        if(matchedItems.length === 0){
+            return 'No images matching "' + oldText + '" were found to rename.';
+        }
+
+        if(affectedRows.size === 1){
+
+            const row =
+                affectedRows.values().next().value;
+
+            const setImages =
+                Array.from(row.querySelectorAll('img')).map(im => im.src);
+
+            openPreview(setImages, 0);
+
+        }
+
+        return 'Renamed ' + matchedItems.length + ' image label'
+            + (matchedItems.length === 1 ? '' : 's')
+            + ' from "' + oldText + '" to "' + newText + '". '
+            + '(Display label only — the source file itself is hosted remotely and can\'t be renamed from here.)';
+
+    }
+
+    // delete duplicates
+    if(/^delete (?:the )?duplicates$/.test(lower)){
+
+        const dupItems =
+            document.querySelectorAll('.image-item[data-duplicate="true"]');
+
+        if(dupItems.length === 0){
+            return 'No duplicate images found.';
+        }
+
+        const count =
+            dupItems.length;
+
+        const executeDelete = function(){
+
+            dupItems.forEach(item => {
+                const btn = item.querySelector('.delete-btn');
+                if(btn) btn.click();
+            });
+
+            return 'All duplicate images are deleted (' + count + ' removed).';
+
+        };
+
+        if(count > DANGEROUS_ACTION_THRESHOLD){
+            pendingAgentConfirmation = {execute:executeDelete};
+            return 'This will delete ' + count + ' duplicate images. Type "confirm" to proceed, or anything else to cancel.';
+        }
+
+        return executeDelete();
+
+    }
+
+    // delete broken
+    if(/^delete (?:the )?broken(?: images)?$/.test(lower)){
+
+        const brokenItems =
+            document.querySelectorAll('.image-item[data-broken="true"]');
+
+        if(brokenItems.length === 0){
+            return 'No broken images found.';
+        }
+
+        const count =
+            brokenItems.length;
+
+        const executeDelete = function(){
+
+            brokenItems.forEach(item => {
+                const btn = item.querySelector('.delete-btn');
+                if(btn) btn.click();
+            });
+
+            return 'All broken images are deleted (' + count + ' removed).';
+
+        };
+
+        if(count > DANGEROUS_ACTION_THRESHOLD){
+            pendingAgentConfirmation = {execute:executeDelete};
+            return 'This will delete ' + count + ' broken images. Type "confirm" to proceed, or anything else to cancel.';
+        }
+
+        return executeDelete();
+
+    }
+
+    // delete set N / delete row N
+    let m =
+        lower.match(/^delete (?:set|row) (\d+)$/);
+
+    if(m){
+
+        const idx =
+            parseInt(m[1], 10) - 1;
+
+        const rows =
+            document.querySelectorAll('.excel-row');
+
+        if(idx < 0 || idx >= rows.length){
+            return 'Set ' + m[1] + ' does not exist.';
+        }
+
+        const btn =
+            rows[idx].querySelector('.delete-set-btn');
+
+        if(btn) btn.click();
+
+        return 'Set ' + m[1] + ' deleted.';
+
+    }
+
+    // copy set N urls
+    m = lower.match(/^copy set (\d+) urls?$/);
+
+    if(m){
+
+        const idx =
+            parseInt(m[1], 10) - 1;
+
+        const rows =
+            document.querySelectorAll('.excel-row');
+
+        if(idx < 0 || idx >= rows.length){
+            return 'Set ' + m[1] + ' does not exist.';
+        }
+
+        const btn =
+            rows[idx].querySelector('.copy-set-btn');
+
+        if(btn) btn.click();
+
+        return 'Copied URLs for set ' + m[1] + '.';
+
+    }
+
+    // copy all urls
+    if(/^copy all urls?$/.test(lower)){
+        document.getElementById('copyAllUrlsButton').click();
+        return 'All image URLs copied.';
+    }
+
+    // search
+    m = text.match(/^search(?: for)? (.+)$/i);
+
+    if(m){
+
+        const term =
+            m[1].trim();
+
+        const box =
+            document.getElementById('searchBox');
+
+        box.value = term;
+
+        box.dispatchEvent(new Event('input'));
+
+        return 'Filtering results for "' + term + '".';
+
+    }
+
+    // delete all <pattern> / delete <pattern>
+    m = text.match(/^delete(?: all)? (.+)$/i);
+
+    if(m){
+
+        let pattern =
+            m[1].trim().replace(/^["']|["']$/g, '');
+
+        if(pattern === ''){
+            return "I didn't catch what to delete. Try: delete all 02_v2.JPG";
+        }
+
+        const patternLower =
+            pattern.toLowerCase();
+
+        const items =
+            document.querySelectorAll('.image-item');
+
+        const matched = [];
+
+        items.forEach(item => {
+
+            const img =
+                item.querySelector('img');
+
+            if(!img) return;
+
+            const currentName =
+                getItemDisplayName(item).toLowerCase();
+
+            if(currentName.includes(patternLower) || img.src.toLowerCase().includes(patternLower)){
+                matched.push(item);
+            }
+
+        });
+
+        if(matched.length === 0){
+            return 'No images matching "' + pattern + '" were found.';
+        }
+
+        const executeDelete = function(){
+
+            matched.forEach(item => {
+                const btn = item.querySelector('.delete-btn');
+                if(btn) btn.click();
+            });
+
+            return 'All "' + pattern + '" images are deleted (' + matched.length + ' removed).';
+
+        };
+
+        if(matched.length > DANGEROUS_ACTION_THRESHOLD){
+            pendingAgentConfirmation = {execute:executeDelete};
+            return 'This will delete ' + matched.length + ' images matching "' + pattern + '". Type "confirm" to proceed, or anything else to cancel.';
+        }
+
+        return executeDelete();
+
+    }
+
+    return 'I didn\'t understand that. Type "help" to see available commands.';
+
+}
+
+function appendChatBubble(role, text){
+
+    const log =
+        document.getElementById('agentChatLog');
+
+    const bubble =
+        document.createElement('div');
+
+    bubble.className =
+        'agent-bubble ' + (role === 'user' ? 'agent-bubble-user' : 'agent-bubble-bot');
+
+    bubble.textContent =
+        (role === 'user' ? '' : '\u{1F697} ') + text;
+
+    log.appendChild(bubble);
+
+    log.scrollTop = log.scrollHeight;
+
+}
+
+function runAgentCommand(customText){
+
+    const input =
+        document.getElementById('agentInput');
+
+    const raw =
+        customText !== undefined ? customText : input.value;
+
+    if(raw.trim() === '') return;
+
+    const welcome =
+        document.getElementById('agentWelcome');
+
+    if(welcome) welcome.style.display = 'none';
+
+    appendChatBubble('user', raw);
+
+    const reply =
+        processAgentCommand(raw);
+
+    if(reply && typeof reply.then === 'function'){
+
+        appendChatBubble('bot', 'Working on it...');
+
+        reply.then(finalReply => {
+            appendChatBubble('bot', finalReply);
+        }).catch(() => {
+            appendChatBubble('bot', 'Something went wrong with that request.');
+        });
+
+    }else{
+
+        appendChatBubble('bot', reply);
+
+    }
+
+    input.value = '';
+
+    input.focus();
+
+}
+
+document.getElementById('agentRunBtn')
+.addEventListener('click', function(){
+    runAgentCommand();
+});
+
+document.getElementById('agentInput')
+.addEventListener('keydown', function(e){
+
+    if(e.key === 'Enter'){
+        e.preventDefault();
+        runAgentCommand();
+    }
+
+});
+
+document.querySelectorAll('.agent-suggestion-btn')
+.forEach(btn => {
+
+    btn.addEventListener('click', function(){
+
+        const template =
+            this.getAttribute('data-template');
+
+        if(template){
+
+            const input =
+                document.getElementById('agentInput');
+
+            input.value = template;
+
+            input.focus();
+
+            return;
+
+        }
+
+        const cmd =
+            this.getAttribute('data-cmd');
+
+        if(cmd) runAgentCommand(cmd);
+
+    });
+
+});
+
+function setAgentPanelOpen(shouldOpen){
+
+    document.getElementById('agentPanel').classList.toggle('open', shouldOpen);
+
+    document.getElementById('agentLauncherBtn').classList.toggle('is-open', shouldOpen);
+
+    if(shouldOpen){
+        document.getElementById('agentInput').focus();
+    }
+
+}
+
+document.getElementById('agentLauncherBtn')
+.addEventListener('click', function(){
+
+    const isOpen =
+        document.getElementById('agentPanel').classList.contains('open');
+
+    setAgentPanelOpen(!isOpen);
+
+});
+
+document.getElementById('agentCloseBtn')
+.addEventListener('click', function(){
+
+    setAgentPanelOpen(false);
+
+});
+
+/* ============ MAIN PARSER ============ */
+
+function createSetOutputPanel(){
+
+    const panel =
+        document.createElement('div');
+
+    panel.className = 'set-output-panel';
+
+    const header =
+        document.createElement('div');
+
+    header.className = 'set-output-header';
+
+    const labelWrap =
+        document.createElement('span');
+
+    labelWrap.className = 'set-output-label-wrap';
+
+    const label =
+        document.createElement('span');
+
+    label.className = 'set-output-label';
+    label.textContent = 'Output';
+
+    const dirtyBadge =
+        document.createElement('span');
+
+    dirtyBadge.className = 'set-output-dirty-badge';
+    dirtyBadge.textContent = '\u25CF unsaved — Copy uses last applied version';
+    dirtyBadge.style.display = 'none';
+
+    labelWrap.appendChild(label);
+    labelWrap.appendChild(dirtyBadge);
+
+    header.appendChild(labelWrap);
+
+    const contentRow =
+        document.createElement('div');
+
+    contentRow.className = 'set-output-content-row';
+
+    const box =
+        document.createElement('textarea');
+
+    box.className = 'set-output-box';
+    box.spellcheck = false;
+    box.readOnly = true;
+    box.title = 'Click the ✏️ Edit button to make this editable';
+
+    box.addEventListener('input', function(){
+
+        const row =
+            panel.closest('.excel-row');
+
+        if(!row) return;
+
+        row.dataset.manuallyEdited = 'true';
+
+        const lastApplied =
+            row.dataset.lastApplied || '';
+
+        if(dirtyBadge){
+            dirtyBadge.style.display =
+                (box.value !== lastApplied) ? 'inline-block' : 'none';
+        }
+
+    });
+
+    const btnStack =
+        document.createElement('div');
+
+    btnStack.className = 'set-output-btn-stack';
+
+    const editBtn =
+        document.createElement('button');
+
+    editBtn.type = 'button';
+    editBtn.className = 'set-output-edit-btn';
+    editBtn.title = 'Edit this output';
+    editBtn.innerHTML = '\u270F\uFE0F';
+
+    editBtn.addEventListener('click', function(){
+
+        const nowEditable =
+            box.readOnly;
+
+        box.readOnly = !nowEditable;
+
+        if(box.readOnly){
+
+            editBtn.classList.remove('active');
+            editBtn.title = 'Edit this output';
+            editBtn.innerHTML = '\u270F\uFE0F';
+            box.title = 'Click the ✏️ Edit button to make this editable';
+
+        }else{
+
+            editBtn.classList.add('active');
+            editBtn.title = 'Lock editing';
+            editBtn.innerHTML = '\uD83D\uDD12';
+            box.title = 'Editable — type your own URL string here';
+            box.focus();
+
+        }
+
+    });
+
+    const copyBtn =
+        document.createElement('button');
+
+    copyBtn.type = 'button';
+    copyBtn.className = 'set-output-copy-btn';
+    copyBtn.title = 'Copy last-applied output';
+    copyBtn.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+        + 'stroke-linecap="round" stroke-linejoin="round">'
+        + '<rect x="9" y="9" width="12" height="12" rx="2"/>'
+        + '<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
+        + '</svg>';
+
+    const applyBtn =
+        document.createElement('button');
+
+    applyBtn.type = 'button';
+    applyBtn.className = 'set-apply-btn';
+    applyBtn.title = 'Apply Modification';
+    applyBtn.innerHTML = '\uD83D\uDCBE';
+
+    btnStack.appendChild(editBtn);
+    btnStack.appendChild(copyBtn);
+    btnStack.appendChild(applyBtn);
+
+    contentRow.appendChild(box);
+    contentRow.appendChild(btnStack);
+
+    panel.appendChild(header);
+    panel.appendChild(contentRow);
+
+    copyBtn.addEventListener('click', function(){
+
+        const row =
+            panel.closest('.excel-row');
+
+        // Copy always reflects the last *applied* state, not the live
+        // real-time preview — until "Apply Modification" is clicked,
+        // this stays the original/previously-applied string.
+        const committed =
+            (row && row.dataset.lastApplied !== undefined)
+                ? row.dataset.lastApplied
+                : box.value;
+
+        navigator.clipboard.writeText(committed);
+
+        copyBtn.classList.add('copied');
+
+        setTimeout(function(){
+            copyBtn.classList.remove('copied');
+        }, 900);
+
+    });
+
+    applyBtn.addEventListener('click', function(){
+
+        const row =
+            panel.closest('.excel-row');
+
+        if(row) openApplyModal(row);
+
+    });
+
+    return panel;
+
+}
+
+/* ============ APPLY MODIFICATION MODAL ============ */
+
+let pendingApplyRow = null;
+
+function openApplyModal(row){
+
+    pendingApplyRow = row;
+
+    document.getElementById('applyModal').classList.add('active');
+
+}
+
+function closeApplyModal(){
+
+    pendingApplyRow = null;
+
+    document.getElementById('applyModal').classList.remove('active');
+
+}
+
+document.getElementById('applyModalYesBtn')
+.addEventListener('click', function(){
+
+    if(pendingApplyRow){
+
+        const box =
+            pendingApplyRow.querySelector('.set-output-box');
+
+        const finalString =
+            box ? box.value.trim() : buildRowUrlString(pendingApplyRow);
+
+        pendingApplyRow.dataset.lastApplied = finalString;
+
+        // The just-applied text becomes the new baseline; resume live
+        // auto-sync only once the DOM actually changes again.
+        pendingApplyRow.dataset.manuallyEdited = 'false';
+
+        const badge =
+            pendingApplyRow.querySelector('.set-output-dirty-badge');
+
+        if(badge) badge.style.display = 'none';
+
+        if(box){
+            box.readOnly = true;
+        }
+
+        const editBtn =
+            pendingApplyRow.querySelector('.set-output-edit-btn');
+
+        if(editBtn){
+            editBtn.classList.remove('active');
+            editBtn.title = 'Edit this output';
+            editBtn.innerHTML = '\u270F\uFE0F';
+        }
+
+        const panel =
+            pendingApplyRow.querySelector('.set-output-panel');
+
+        if(panel){
+
+            panel.classList.add('just-applied');
+
+            setTimeout(function(){
+                panel.classList.remove('just-applied');
+            }, 900);
+
+        }
+
+    }
+
+    closeApplyModal();
+
+});
+
+document.getElementById('applyModalNoBtn')
+.addEventListener('click', closeApplyModal);
+
+document.getElementById('applyModal')
+.addEventListener('click', function(e){
+
+    if(e.target === this) closeApplyModal();
+
+});
+
+/* ============ LIVE OUTPUT SYNC (MutationObserver) ============ */
+/*
+   Whenever a set's contents change — an image deleted, a label renamed,
+   or the order shuffled by drag-and-drop — this keeps that set's live
+   "Output" preview in sync automatically, without needing every mutation
+   site to remember to call a refresh function by hand.
+*/
+
+const rowOutputObserver = new MutationObserver(function(mutations){
+
+    const affectedRows = new Set();
+
+    mutations.forEach(function(m){
+
+        let node = m.target;
+
+        if(node.nodeType === 3){
+            node = node.parentElement;
+        }
+
+        if(!node || !node.closest) return;
+
+        // ignore mutations we caused ourselves when writing the preview text
+        if(node.closest('.set-output-panel')) return;
+
+        const row =
+            node.closest('.excel-row');
+
+        if(row) affectedRows.add(row);
+
+    });
+
+    affectedRows.forEach(function(row){
+        refreshRowOutput(row);
+    });
+
+});
+
+rowOutputObserver.observe(document.getElementById('imageContainer'), {
+    childList:true,
+    subtree:true,
+    characterData:true
+});
+
+/* ============ MAIN PARSER ============ */
+
+const SETS_PER_BATCH = 30;
+
+function parseImageData(){
+
+    undoStack = [];
+    redoStack = [];
+
+    isFilterActive = false;
+
+    const inputText =
+        document.getElementById('inputArea').value.trim();
+
+    const lines =
+        inputText.split('\n').filter(line => line.trim() !== '');
+
+    projectedTotalSets = lines.length;
+
+    projectedTotalImages = 0;
+
+    lines.forEach(line => {
+        projectedTotalImages += countImagePairsInLine(line);
+    });
+
+    const imageContainer =
+        document.getElementById('imageContainer');
+
+    imageContainer.innerHTML = '';
+
+    const seenUrls = new Set();
+
+    let renderIndex = 0;
+
+    function renderRow(line){
+
+        const rowContainer =
+            document.createElement('div');
+
+        rowContainer.className =
+            'excel-row';
+
+        rowContainer.dataset.originalLine =
+            line;
+
+        const actionWrapper =
+            document.createElement('div');
+
+        actionWrapper.className =
+            'row-actions';
+
+        const copySetBtn =
+            document.createElement('button');
+
+        copySetBtn.className =
+            'copy-set-btn';
+
+        copySetBtn.textContent =
+            'Copy Set URLs';
+
+        const deleteSetBtn =
+            document.createElement('button');
+
+        deleteSetBtn.className =
+            'delete-set-btn';
+
+        deleteSetBtn.textContent =
+            'Delete Set';
+
+        actionWrapper.appendChild(copySetBtn);
+        actionWrapper.appendChild(deleteSetBtn);
+
+        const rowBadges =
+            document.createElement('div');
+
+        rowBadges.className = 'row-badges';
+
+        actionWrapper.appendChild(rowBadges);
+
+        const rowTopBar =
+            document.createElement('div');
+
+        rowTopBar.className = 'row-top-bar';
+
+        const skuBox =
+            document.createElement('div');
+
+        skuBox.className = 'row-sku-box';
+        skuBox.innerHTML = '<span class="row-sku-label">SKU</span>';
+
+        const outputPanel =
+            createSetOutputPanel();
+
+        rowTopBar.appendChild(skuBox);
+        rowTopBar.appendChild(outputPanel);
+
+        const rowContent =
+            document.createElement('div');
+
+        rowContent.className = 'row-content';
+
+        rowContent.appendChild(actionWrapper);
+
+        rowContainer.appendChild(rowTopBar);
+        rowContainer.appendChild(rowContent);
+
+        copySetBtn.addEventListener('click', function(){
+
+            const imgs =
+                rowContainer.querySelectorAll('img');
+
+            const urls = [];
+
+            imgs.forEach(img => {
+                urls.push(img.src);
+            });
+
+            navigator.clipboard.writeText(
+                urls.join('\n')
+            );
+
+            window.postMessage({
+                type:"KP360_URL_MEMORY",
+                urls:urls
+            },"*");
+
+            alert(urls.length + ' URLs copied.');
+
+        });
+
+        deleteSetBtn.addEventListener('click', function(){
+
+            const parent =
+                rowContainer.parentNode;
+
+            if(!parent) return;
+
+            const nextSibling =
+                rowContainer.nextSibling;
+
+            const imageCountInRow =
+                rowContainer.querySelectorAll('.image-item').length;
+
+            parent.removeChild(rowContainer);
+
+            projectedTotalSets--;
+            projectedTotalImages -= imageCountInRow;
+
+            pushUndo({
+                type:'set',
+                element:rowContainer,
+                parent:parent,
+                nextSibling:nextSibling,
+                imageCount:imageCountInRow
+            });
+
+            clearRedoStack();
+
+            updateStats();
+
+        });
+
+        const pairs =
+            line.split(',');
+
+        const tokenedBaseIds = [];
+
+        let hasMaster = false;
+
+        pairs.forEach(pair => {
+
+            const eqIdx =
+                pair.indexOf('=');
+
+            if(eqIdx === -1) return;
+
+            const key =
+                pair.slice(0, eqIdx);
+
+            const value =
+                pair.slice(eqIdx + 1);
+
+            if(!key || !value) return;
+
+            const keyLooksRight =
+                key.trim().toUpperCase().indexOf('IMAGEURL') !== -1;
+
+            const valueLooksLikeImage =
+                isLikelyImageUrlValue(value);
+
+            if(!keyLooksRight && !valueLooksLikeImage) return;
+
+            const url =
+                value.trim();
+
+            if(url === '') return;
+
+            const normalized =
+                normalizeUrlForDuplicateCheck(url);
+
+            let isDuplicate = false;
+
+            if(seenUrls.has(normalized)){
+                isDuplicate = true;
+            }else{
+                seenUrls.add(normalized);
+            }
+
+            const isMalformed =
+                !isWellFormedImageUrl(url);
+
+            const filename =
+                extractImageId(url);
+
+            const item =
+                document.createElement('span');
+
+            item.className =
+                'image-item';
+
+            item.dataset.originalFilename =
+                filename;
+
+            if(isDuplicate){
+                item.style.border =
+                    '2px solid red';
+                item.setAttribute('data-duplicate', 'true');
+            }
+
+            if(isMalformed){
+                item.setAttribute('data-malformed', 'true');
+            }
+
+            const img =
+                document.createElement('img');
+
+            img.src = url;
+
+            img.loading = "lazy";
+
+            img.alt = filename;
+
+            img.addEventListener('error', function(){
+                item.setAttribute('data-broken', 'true');
+                updateStats();
+            });
+
+            img.addEventListener('click', function(){
+
+                const setImages =
+                    Array.from(rowContainer.querySelectorAll('img')).map(im => im.src);
+
+                const idx =
+                    setImages.indexOf(url);
+
+                openPreview(setImages, idx >= 0 ? idx : 0);
+
+            });
+
+            const deleteBtn =
+                document.createElement('button');
+
+            deleteBtn.className =
+                'delete-btn';
+
+            deleteBtn.textContent =
+                '×';
+
+            deleteBtn.addEventListener('click',function(e){
+
+                e.stopPropagation();
+
+                const parent =
+                    item.parentNode;
+
+                if(!parent) return;
+
+                const nextSibling =
+                    item.nextSibling;
+
+                item.remove();
+
+                projectedTotalImages--;
+
+                pushUndo({
+                    type:'image',
+                    element:item,
+                    parent:parent,
+                    nextSibling:nextSibling
+                });
+
+                clearRedoStack();
+
+                updateStats();
+
+            });
+
+            const labelElem =
+                document.createElement('div');
+
+            labelElem.className =
+                'image-label';
+
+            labelElem.textContent =
+                filename;
+
+            labelElem.title =
+                'Double-click to copy filename';
+
+            labelElem.addEventListener('dblclick', function(){
+
+                navigator.clipboard.writeText(labelElem.textContent.trim());
+
+                labelElem.classList.add('label-copied');
+
+                setTimeout(function(){
+                    labelElem.classList.remove('label-copied');
+                }, 800);
+
+                showCopyToast('Image Name copied');
+
+            });
+
+            item.appendChild(img);
+            item.appendChild(deleteBtn);
+            item.appendChild(labelElem);
+
+            if(isMalformed){
+
+                const warn =
+                    document.createElement('div');
+
+                warn.className = 'malformed-warning';
+                warn.textContent = '⚠ Unusual URL format';
+
+                item.appendChild(warn);
+
+            }
+
+            rowContent.appendChild(item);
+
+            const dotIdx =
+                filename.lastIndexOf('.');
+
+            const namePart =
+                dotIdx !== -1 ? filename.slice(0, dotIdx) : filename;
+
+            const tokenMatch =
+                namePart.match(POSITION_TOKEN_REGEX);
+
+            if(tokenMatch){
+
+                const base =
+                    namePart.slice(0, tokenMatch.index);
+
+                tokenedBaseIds.push(base);
+
+                if(/master/i.test(tokenMatch[1])){
+                    hasMaster = true;
+                }
+
+            }
+
+        });
+
+        imageContainer.appendChild(rowContainer);
+
+        if(!hasMaster && tokenedBaseIds.length > 0){
+
+            const badge =
+                document.createElement('div');
+
+            badge.className = 'row-badge row-badge-warning';
+            badge.textContent = '⚠ No Master';
+
+            rowBadges.appendChild(badge);
+
+        }
+
+        const distinctBases =
+            Array.from(new Set(tokenedBaseIds));
+
+        if(distinctBases.length > 1){
+
+            const badge =
+                document.createElement('div');
+
+            badge.className = 'row-badge row-badge-warning';
+            badge.textContent = '⚠ Mixed IDs';
+
+            rowBadges.appendChild(badge);
+
+        }
+
+        if(distinctBases.length >= 1){
+
+            const counts = {};
+
+            tokenedBaseIds.forEach(base => {
+                counts[base] = (counts[base] || 0) + 1;
+            });
+
+            const dominantBase =
+                Object.keys(counts).reduce((a, b) => counts[a] >= counts[b] ? a : b);
+
+            skuBox.innerHTML =
+                '<span class="row-sku-label">SKU</span><span class="row-sku-value">'
+                + dominantBase + '</span>';
+
+        }
+
+        Sortable.create(rowContent,{
+            animation:150,
+            ghostClass:'sortable-ghost',
+            filter:'.row-actions',
+            preventOnFilter:false,
+            onEnd:function(){
+                renumberSetSequence(rowContainer);
+                clearRedoStack();
+            }
+        });
+
+        refreshRowOutput(rowContainer);
+
+        rowContainer.dataset.lastApplied =
+            buildRowUrlString(rowContainer);
+
+    }
+
+    function renderNextBatch(){
+
+        const end =
+            Math.min(renderIndex + SETS_PER_BATCH, lines.length);
+
+        for(let i = renderIndex; i < end; i++){
+            renderRow(lines[i]);
+        }
+
+        renderIndex = end;
+
+        const existingBtn =
+            document.getElementById('loadMoreSetsBtn');
+
+        if(existingBtn) existingBtn.remove();
+
+        if(renderIndex < lines.length){
+
+            const loadMoreBtn =
+                document.createElement('button');
+
+            loadMoreBtn.id = 'loadMoreSetsBtn';
+            loadMoreBtn.className = 'load-more-btn';
+            loadMoreBtn.textContent =
+                'Load ' + Math.min(SETS_PER_BATCH, lines.length - renderIndex)
+                + ' more sets (' + (lines.length - renderIndex) + ' remaining)';
+
+            loadMoreBtn.addEventListener('click', renderNextBatch);
+
+            imageContainer.appendChild(loadMoreBtn);
+
+        }
+
+        updateStats();
+
+    }
+
+    renderNextBatch();
+
+}
+
+function copyAllUrls(){
+
+    loadAllRemainingSets();
+
+    const imgs =
+        document.querySelectorAll('#imageContainer img');
+
+    const urls = [];
+
+    imgs.forEach(img => {
+        urls.push(img.src);
+    });
+
+    navigator.clipboard.writeText(
+        urls.join('\n')
+    );
+
+    window.postMessage({
+        type:"KP360_URL_MEMORY",
+        urls:urls
+    },"*");
+
+    alert(urls.length + ' URLs copied.');
+}
+
+/* ============ XLSX EXPORT ============ */
+
+function extractOriginalUrlList(originalLine){
+
+    const pairs =
+        originalLine.split(',');
+
+    const urls = [];
+
+    pairs.forEach(pair => {
+
+        const eqIdx =
+            pair.indexOf('=');
+
+        if(eqIdx === -1) return;
+
+        const key =
+            pair.slice(0, eqIdx);
+
+        const value =
+            pair.slice(eqIdx + 1);
+
+        if(!key || !value) return;
+
+        const keyLooksRight =
+            key.trim().toUpperCase().indexOf('IMAGEURL') !== -1;
+
+        const valueLooksLikeImage =
+            isLikelyImageUrlValue(value);
+
+        if(!keyLooksRight && !valueLooksLikeImage) return;
+
+        const url =
+            value.trim();
+
+        if(url === '') return;
+
+        urls.push(url);
+
+    });
+
+    return urls;
+
+}
+
+function hasRowActuallyChanged(row){
+
+    const originalUrls =
+        extractOriginalUrlList(row.dataset.originalLine || '');
+
+    const originalFilenameByUrl = {};
+
+    originalUrls.forEach(url => {
+        originalFilenameByUrl[url] = extractImageId(url);
+    });
+
+    const currentItems =
+        Array.from(row.querySelectorAll('.image-item'));
+
+    const currentSrcs =
+        currentItems.map(item => {
+            const img = item.querySelector('img');
+            return img ? img.src : '';
+        });
+
+    // 1. Added / removed / reordered? img.src is immutable and reflects
+    //    true physical position — unlike the label, which auto-renumbering
+    //    always relabels back to a "normal-looking" master/02/03 sequence
+    //    regardless of what actually got dragged where.
+    if(currentSrcs.length !== originalUrls.length) return true;
+
+    for(let i = 0; i < currentSrcs.length; i++){
+        if(currentSrcs[i] !== originalUrls[i]) return true;
+    }
+
+    // 2. Renamed? Compare each photo's current label against ITS OWN
+    //    original filename (matched by src, not by position), so a rename
+    //    is detected independently of any reordering.
+    for(const item of currentItems){
+
+        const img =
+            item.querySelector('img');
+
+        if(!img) continue;
+
+        const currentLabel =
+            getItemDisplayName(item);
+
+        const originalFilename =
+            originalFilenameByUrl[img.src];
+
+        if(originalFilename !== undefined && currentLabel !== originalFilename){
+            return true;
+        }
+
+    }
+
+    return false;
+
+}
+
+function buildWorkbookRows(){
+
+    const rows =
+        document.querySelectorAll('.excel-row');
+
+    const data =
+        [['SKU (Original)', 'IMAGE URL', '', 'SKU (Modified)', 'IMAGE URL', 'Changed?']];
+
+    const changedRowIndexes = [];
+
+    rows.forEach((row, idx) => {
+
+        const originalLine =
+            row.dataset.originalLine || '';
+
+        const modifiedLine =
+            (row.dataset.lastApplied !== undefined) ? row.dataset.lastApplied : buildRowUrlString(row);
+
+        // Compare actual image identity/order, NOT the raw two strings —
+        // the original pasted line and the reconstructed line can use
+        // different ITEMIMAGEURL key numbering (e.g. a set that jumps
+        // straight from "...7=" to "...10=" for a trailing logo image)
+        // even when nothing about the set was actually touched. Diffing
+        // the filename sequence instead avoids flagging that as changed.
+        const changed =
+            hasRowActuallyChanged(row);
+
+        if(changed){
+            // data row index (1-based, since row 0 is the header)
+            changedRowIndexes.push(idx + 1);
+        }
+
+        data.push(['', originalLine, '', '', modifiedLine, changed ? 'Yes' : '']);
+
+    });
+
+    return {data, changedRowIndexes};
+
+}
+
+function downloadWorkbookXlsx(){
+
+    if(typeof XLSX === 'undefined'){
+        alert('The Excel export library failed to load. Check your connection and try again.');
+        return;
+    }
+
+    const built =
+        buildWorkbookRows();
+
+    const worksheet =
+        XLSX.utils.aoa_to_sheet(built.data);
+
+    worksheet['!cols'] = [
+        {wch:16}, {wch:60}, {wch:4}, {wch:16}, {wch:60}, {wch:10}
+    ];
+
+    // Best-effort highlight: paint the modified URL/SKU cells yellow so
+    // changed sets are visually obvious. Cell fill-color writing isn't
+    // guaranteed across every SheetJS build, so the plain-text "Changed?"
+    // column above is the reliable indicator regardless of whether the
+    // color itself renders in the file that gets opened.
+    try{
+
+        const highlightFill = {
+            fill:{ patternType:'solid', fgColor:{rgb:'FFF59D'} }
+        };
+
+        built.changedRowIndexes.forEach(rowIdx => {
+
+            [1, 3, 4].forEach(colIdx => {
+
+                const cellRef =
+                    XLSX.utils.encode_cell({r:rowIdx, c:colIdx});
+
+                if(worksheet[cellRef]){
+                    worksheet[cellRef].s = highlightFill;
+                }
+
+            });
+
+        });
+
+    }catch(e){
+        // styling isn't supported by this build — the "Changed?" column
+        // still communicates exactly the same information as plain text.
+    }
+
+    const workbook =
+        XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Images');
+
+    XLSX.writeFile(workbook, 'image_urls.xlsx', {cellStyles:true});
+
+}
+
+let xlsxConfirmStage = 1;
+
+function openXlsxConfirmModal(){
+
+    xlsxConfirmStage = 1;
+
+    document.getElementById('xlsxConfirmTitle').textContent =
+        'Do you want to apply the modification?';
+
+    document.getElementById('xlsxConfirmSub').textContent =
+        "This applies every set's pending changes, then exports the Excel file.";
+
+    document.getElementById('xlsxConfirmProceedBtn').textContent =
+        'Proceed';
+
+    document.getElementById('xlsxConfirmModal').classList.add('active');
+
+}
+
+function closeXlsxConfirmModal(){
+
+    xlsxConfirmStage = 1;
+
+    document.getElementById('xlsxConfirmModal').classList.remove('active');
+
+}
+
+document.getElementById('downloadXlsxButton')
+.addEventListener('click', openXlsxConfirmModal);
+
+document.getElementById('xlsxConfirmCancelBtn')
+.addEventListener('click', closeXlsxConfirmModal);
+
+document.getElementById('xlsxConfirmModal')
+.addEventListener('click', function(e){
+    if(e.target === this) closeXlsxConfirmModal();
+});
+
+document.getElementById('xlsxConfirmProceedBtn')
+.addEventListener('click', function(){
+
+    if(xlsxConfirmStage === 1){
+
+        xlsxConfirmStage = 2;
+
+        document.getElementById('xlsxConfirmTitle').textContent =
+            'Click Proceed';
+
+        document.getElementById('xlsxConfirmSub').textContent =
+            'This is your final confirmation — proceeding will apply all changes and download the Excel file.';
+
+        return;
+
+    }
+
+    // stage 2 confirmed: load anything still paginated, apply every set's
+    // pending modifications, then export
+    loadAllRemainingSets();
+
+    document.querySelectorAll('.excel-row').forEach(row => {
+
+        row.dataset.lastApplied =
+            buildRowUrlString(row);
+
+        refreshRowOutput(row);
+
+    });
+
+    closeXlsxConfirmModal();
+
+    downloadWorkbookXlsx();
+
+});
+
+/* ============ AUTOSAVE (localStorage) ============ */
+
+const AUTOSAVE_KEY = 'carroImageViewerAutosaveInput';
+
+function saveInputToLocalStorage(){
+
+    try{
+        localStorage.setItem(AUTOSAVE_KEY, document.getElementById('inputArea').value);
+    }catch(e){
+        // private browsing / storage quota — autosave just silently no-ops
+    }
+
+}
+
+function restoreInputFromLocalStorage(){
+
+    try{
+
+        const saved =
+            localStorage.getItem(AUTOSAVE_KEY);
+
+        const inputArea =
+            document.getElementById('inputArea');
+
+        if(saved && inputArea.value.trim() === ''){
+            inputArea.value = saved;
+        }
+
+    }catch(e){
+        // ignore
+    }
+
+}
+
+let autosaveTimer = null;
+
+document.getElementById('inputArea')
+.addEventListener('input', function(){
+
+    clearTimeout(autosaveTimer);
+
+    autosaveTimer = setTimeout(saveInputToLocalStorage, 600);
+
+});
+
+restoreInputFromLocalStorage();
+
+/* ============ RESET PROCESSOR ============ */
+
+function resetProcessor(){
+
+    document.getElementById('inputArea').value = '';
+
+    document.getElementById('imageContainer').innerHTML = '';
+
+    undoStack = [];
+    redoStack = [];
+
+    isFilterActive = false;
+
+    projectedTotalSets = 0;
+    projectedTotalImages = 0;
+
+    stopRequested = true;
+
+    if(currentOperationAbortController){
+        currentOperationAbortController.abort();
+    }
+
+    endCancellableOperation();
+
+    resetSearchBoxUI();
+
+    updateStats();
+
+    try{
+        localStorage.removeItem(AUTOSAVE_KEY);
+    }catch(e){
+        // ignore
+    }
+
+    document.getElementById('inputArea').focus();
+
+}
+
+function openResetConfirmModal(){
+    document.getElementById('resetConfirmModal').classList.add('active');
+}
+
+function closeResetConfirmModal(){
+    document.getElementById('resetConfirmModal').classList.remove('active');
+}
+
+document.getElementById('resetProcessorButton')
+.addEventListener('click', openResetConfirmModal);
+
+document.getElementById('resetConfirmCancelBtn')
+.addEventListener('click', closeResetConfirmModal);
+
+document.getElementById('resetConfirmModal')
+.addEventListener('click', function(e){
+    if(e.target === this) closeResetConfirmModal();
+});
+
+document.getElementById('resetConfirmProceedBtn')
+.addEventListener('click', function(){
+    resetProcessor();
+    closeResetConfirmModal();
+});
+
+document.getElementById('processButton')
+.addEventListener('click',parseImageData);
+
+document.getElementById('copyAllUrlsButton')
+.addEventListener('click',copyAllUrls);
+
+document.getElementById('searchBox')
+.addEventListener('input',function(){
+
+    const term =
+        this.value.trim().toLowerCase();
+
+    const wrap =
+        this.closest('.search-wrap');
+
+    if(wrap) wrap.classList.toggle('has-value', term !== '');
+
+    if(term === ''){
+        clearFilterVisibility();
+        setFilterActiveState(false);
+        return;
+    }
+
+    filterItemsByPredicate(item => getItemDisplayName(item).toLowerCase().includes(term));
+
+});
+
+document.getElementById('searchClearBtn')
+.addEventListener('click', function(){
+
+    const box =
+        document.getElementById('searchBox');
+
+    box.value = '';
+
+    box.dispatchEvent(new Event('input'));
+
+    box.focus();
+
+});
+
+</script>
+
+<div class="app-footer">
+    Developed by Dominic Pardo • 2026 • Version 20
+</div>
+
+</body>
+</html>
