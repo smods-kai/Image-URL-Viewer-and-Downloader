@@ -3836,8 +3836,11 @@ function filterItemsByPredicate(predicate){
 
 async function loadImageElement(url, signal){
 
+    const proxyUrl =
+        '/api/fetch-image?url=' + encodeURIComponent(url);
+
     const response =
-        await fetch(url, {mode:'cors', signal:signal});
+        await fetch(proxyUrl, { signal: signal });
 
     if(!response.ok) throw new Error('bad response');
 
@@ -3968,8 +3971,11 @@ async function downloadSingleImage(url, filename, signal){
 
     try{
 
+        const proxyUrl =
+            '/api/fetch-image?url=' + encodeURIComponent(url);
+
         const response =
-            await fetch(url, {mode:'cors', signal:signal});
+            await fetch(proxyUrl, { signal: signal });
 
         if(!response.ok) throw new Error('bad response');
 
@@ -4178,8 +4184,11 @@ async function downloadMatchedImages(matchedItems){
 
         try{
 
+            const proxyUrl =
+                '/api/fetch-image?url=' + encodeURIComponent(img.src);
+
             const response =
-                await fetch(img.src, {mode:'cors', signal:controller.signal});
+                await fetch(proxyUrl, { signal: controller.signal });
 
             if(!response.ok) throw new Error('bad response');
 
