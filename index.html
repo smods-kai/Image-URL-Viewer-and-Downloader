@@ -2260,8 +2260,12 @@ Copy All URLs
 Download XLSX
 </button>
 
+<button id="downloadAllButton" class="download-btn">
+⬇ Download All
+</button>
+
 <button id="resetProcessorButton" class="reset-btn">
-&#8635; Reset
+
 </button>
 
 </div>
@@ -3922,7 +3926,6 @@ async function canvasPadImageBlob(url, targetW, targetH, marginPx, signal){
 }
 
 
-
 /* ============ STOP / CANCEL OPERATION ============ */
 
 let stopRequested = false;
@@ -3940,6 +3943,38 @@ function beginCancellableOperation(){
     currentOperationAbortController = new AbortController();
 
     return currentOperationAbortController;
+
+}
+
+function showDownloadSummary(result){
+
+    if(!result) return;
+
+    const failed =
+        result.uniqueCount - result.successCount;
+
+    const lines = [
+
+        'Download Summary',
+        '',
+        'Images Found.............' + result.total,
+        'Unique Images...........' + result.uniqueCount,
+        'Duplicates Skipped......' + result.duplicatesSkipped,
+        'Downloaded..............' + result.successCount,
+        'Failed..................' + failed,
+        '',
+        'Mode....................' + result.mode
+
+    ];
+
+    if(result.cancelled){
+
+        lines.push('');
+        lines.push('Download Cancelled');
+
+    }
+
+    alert(lines.join('\n'));
 
 }
 
@@ -3964,6 +3999,46 @@ function requestStopOperation(){
     }
 
     return 'Stopping the current operation...';
+
+}
+
+function openDownloadProgress(){
+
+    document
+        .getElementById('downloadProgressModal')
+        .classList.add('active');
+
+}
+
+function closeDownloadProgress(){
+
+    document
+        .getElementById('downloadProgressModal')
+        .classList.remove('active');
+
+}
+
+function updateDownloadProgress(
+    current,
+    total
+){
+
+    const percent =
+        total === 0
+            ? 0
+            : Math.round(current / total * 100);
+
+    document.getElementById(
+        'downloadProgressBar'
+    ).value = percent;
+
+    document.getElementById(
+        'downloadProgressText'
+    ).textContent =
+        current +
+        ' / ' +
+        total +
+        ' downloaded';
 
 }
 
@@ -4013,7 +4088,60 @@ async function downloadSingleImage(url, filename, signal){
 
 }
 
+function getUniqueDownloadItems(items){
+
+    const uniqueItems =
+        [];
+
+    const seenUrls =
+        new Set();
+
+    let duplicateCount = 0;
+
+    for(const item of items){
+
+        const img =
+            item.querySelector('img');
+
+        if(!img) continue;
+
+        const url =
+            img.src;
+
+        if(seenUrls.has(url)){
+            duplicateCount++;
+            continue;
+        }
+
+        seenUrls.add(url);
+
+        uniqueItems.push(item);
+
+    }
+
+    return {
+        items: uniqueItems,
+        duplicateCount,
+        originalCount: items.length,
+        uniqueCount: uniqueItems.length
+    };
+
+}
+
 async function downloadMatchedImagesIndividually(matchedItems){
+
+    const downloadData =
+        getUniqueDownloadItems(matchedItems);
+
+    matchedItems =
+        downloadData.items;
+
+    openDownloadProgress();
+
+    updateDownloadProgress(
+        0,
+        downloadData.uniqueCount
+    );
 
     const controller =
         beginCancellableOperation();
@@ -4034,14 +4162,27 @@ async function downloadMatchedImagesIndividually(matchedItems){
         const filename =
             getItemDisplayName(item) || extractImageId(img.src);
 
-        const ok =
-            await downloadSingleImage(img.src, filename, controller.signal);
+    const ok =
+        await downloadSingleImage(
+            img.src,
+            filename,
+            controller.signal
+        );
 
-        processedCount++;
+    processedCount++;
 
-        if(ok) successCount++;
+    updateDownloadProgress(
+        processedCount,
+        downloadData.uniqueCount
+    );
 
-        if(stopRequested) break;
+    if(ok){
+        successCount++;
+    }
+
+    if(stopRequested){
+        break;
+    }
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -4050,16 +4191,48 @@ async function downloadMatchedImagesIndividually(matchedItems){
     const cancelled =
         stopRequested;
 
+    closeDownloadProgress();
+
     endCancellableOperation();
 
-    return {mode:'individual', successCount, total:matchedItems.length, processedCount, cancelled};
+    return {
+        mode:'individual',
+        successCount,
+        total:downloadData.originalCount,
+        uniqueCount:downloadData.uniqueCount,
+        duplicatesSkipped:downloadData.duplicateCount,
+        processedCount,
+        cancelled
+    };
 
 }
 
 async function enlargeMatchedImages(matchedItems, targetW, targetH, marginPx){
 
+    const downloadData =
+        getUniqueDownloadItems(matchedItems);
+
+    matchedItems =
+        downloadData.items;
+
+    openDownloadProgress();
+
+    updateDownloadProgress(
+        0,
+        downloadData.uniqueCount
+    );
+
     if(typeof JSZip === 'undefined'){
-        return {mode:'zip-failed', successCount:0, total:matchedItems.length, processedCount:0, cancelled:false, noZip:true};
+        return {
+            mode:'zip-failed',
+            successCount:0,
+            total:downloadData.originalCount,
+            uniqueCount:downloadData.uniqueCount,
+            duplicatesSkipped:downloadData.duplicateCount,
+            processedCount:0,
+            cancelled:false,
+            noZip:true
+        };
     }
 
     const controller =
@@ -4107,9 +4280,14 @@ async function enlargeMatchedImages(matchedItems, targetW, targetH, marginPx){
         }catch(e){
             // couldn't fetch/decode this one (cross-origin, or the
             // operation was stopped) — it's left out of the zip.
-        }
+        }   
 
         processedCount++;
+
+        updateDownloadProgress(
+            processedCount,
+            downloadData.uniqueCount
+        );
 
     }
 
@@ -4117,8 +4295,17 @@ async function enlargeMatchedImages(matchedItems, targetW, targetH, marginPx){
         stopRequested;
 
     if(successCount === 0){
+        closeDownloadProgress();
         endCancellableOperation();
-        return {mode:'zip-failed', successCount:0, total:matchedItems.length, processedCount, cancelled};
+        return {
+            mode:'zip',
+            successCount,
+            total:downloadData.originalCount,
+            uniqueCount:downloadData.uniqueCount,
+            duplicatesSkipped:downloadData.duplicateCount,
+            processedCount,
+            cancelled
+        };
     }
 
     const zipBlob =
@@ -4139,14 +4326,37 @@ async function enlargeMatchedImages(matchedItems, targetW, targetH, marginPx){
 
     URL.revokeObjectURL(zipUrl);
 
+    closeDownloadProgress();
+
     endCancellableOperation();
 
-    return {mode:'zip', successCount, total:matchedItems.length, processedCount, cancelled};
+    return {
+        mode:'zip',
+        successCount,
+        total:downloadData.originalCount,
+        uniqueCount:downloadData.uniqueCount,
+        duplicatesSkipped:downloadData.duplicateCount,
+        processedCount,
+        cancelled
+    };
 
 }
 
 async function downloadMatchedImages(matchedItems){
 
+    const downloadData =
+        getUniqueDownloadItems(matchedItems);
+
+    matchedItems =
+        downloadData.items;
+
+    openDownloadProgress();
+
+    updateDownloadProgress(
+        0,
+        downloadData.uniqueCount
+    );
+    
     if(typeof JSZip === 'undefined'){
         return downloadMatchedImagesIndividually(matchedItems);
     }
@@ -4206,14 +4416,28 @@ async function downloadMatchedImages(matchedItems){
 
         processedCount++;
 
+        updateDownloadProgress(
+            processedCount,
+            downloadData.uniqueCount
+        );
+
     }
 
     const cancelled =
         stopRequested;
 
     if(successCount === 0){
+        closeDownloadProgress();
         endCancellableOperation();
-        return {mode:'zip-failed', successCount:0, total:matchedItems.length, processedCount, cancelled};
+        return {
+            mode:'zip-failed',
+            successCount:0,
+            total:downloadData.originalCount,
+            uniqueCount:downloadData.uniqueCount,
+            duplicatesSkipped:downloadData.duplicateCount,
+            processedCount,
+            cancelled
+        };
     }
 
     const zipBlob =
@@ -4226,7 +4450,14 @@ async function downloadMatchedImages(matchedItems){
         document.createElement('a');
 
     a.href = zipUrl;
-    a.download = cancelled ? 'images_partial.zip' : 'images.zip';
+    
+    const today =
+        new Date().toISOString().slice(0,10);
+
+    a.download =
+        cancelled
+            ? `Images_${today}_Partial.zip`
+            : `Images_${today}.zip`;
 
     document.body.appendChild(a);
     a.click();
@@ -4234,9 +4465,17 @@ async function downloadMatchedImages(matchedItems){
 
     URL.revokeObjectURL(zipUrl);
 
+    closeDownloadProgress();
     endCancellableOperation();
-
-    return {mode:'zip', successCount, total:matchedItems.length, processedCount, cancelled};
+    return {
+        mode:'zip',
+        successCount,
+        total:downloadData.originalCount,
+        uniqueCount:downloadData.uniqueCount,
+        duplicatesSkipped:downloadData.duplicateCount,
+        processedCount,
+        cancelled
+    };
 
 }
 
@@ -5788,6 +6027,34 @@ function parseImageData(){
         actionWrapper.appendChild(copySetBtn);
         actionWrapper.appendChild(deleteSetBtn);
 
+        const downloadSetBtn =
+            document.createElement('button');
+
+        downloadSetBtn.className =
+            'download-set-btn';
+
+        downloadSetBtn.textContent =
+            '⬇ Download Set';
+
+        actionWrapper.appendChild(downloadSetBtn);
+
+        downloadSetBtn.addEventListener(
+            'click',
+        async function(){
+
+            const items =
+                Array.from(
+                    rowContainer.querySelectorAll('.image-item')
+                );
+
+            const result =
+                await downloadMatchedImages(items);
+
+        showDownloadSummary(result);
+
+        }
+    );
+
         const rowBadges =
             document.createElement('div');
 
@@ -6634,7 +6901,93 @@ document.getElementById('searchClearBtn')
 
 });
 
+document.getElementById('downloadAllButton')
+.addEventListener(
+    'click',
+    async function(){
+
+        // Make sure every paginated set is rendered.
+        loadAllRemainingSets();
+
+        const items =
+            Array.from(
+                document.querySelectorAll('.image-item')
+            );
+
+        if(items.length === 0){
+
+            alert('No images available.');
+
+            return;
+
+        }
+
+        const result =
+            await downloadMatchedImages(items);
+
+        showDownloadSummary(result);
+
+    }
+);
+
+document
+.getElementById('cancelDownloadBtn')
+.addEventListener(
+    'click',
+    requestStopOperation
+);
+
 </script>
+
+<!-- DOWNLOAD PROGRESS MODAL -->
+
+<div
+    id="downloadProgressModal"
+    class="apply-modal"
+>
+
+    <div class="apply-modal-content">
+
+        <div class="apply-modal-icon">
+            ⬇
+        </div>
+
+        <div class="apply-modal-title">
+            Downloading Images
+        </div>
+
+        <div
+            id="downloadProgressText"
+            style="
+                margin-top:12px;
+                font-size:13px;
+                color:#ccc;
+            "
+        >
+            Preparing...
+        </div>
+
+        <progress
+            id="downloadProgressBar"
+            value="0"
+            max="100"
+            style="
+                width:100%;
+                margin-top:18px;
+            "
+        ></progress>
+
+        <button
+            id="cancelDownloadBtn"
+            class="apply-modal-btn apply-modal-no"
+            style="margin-top:20px;"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
 
 <div class="app-footer">
     Developed by Dominic Pardo • 2026 • Version 20
