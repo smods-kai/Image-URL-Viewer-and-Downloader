@@ -5431,34 +5431,32 @@ function renderWorkspaceManager(){
 WORKSPACE TOOLBAR
 ======================================================= */
 
-document
-.getElementById("workspaceDownloadAllBtn")
-.addEventListener("click",function(){
+function initializeWorkspaceToolbar(){
 
-    if(
-        !window.processedWorkspace ||
-        Object.keys(window.processedWorkspace.sets).length===0
-    ){
+const workspaceDownloadAllBtn =
+    document.getElementById("workspaceDownloadAllBtn");
 
-        alert("Workspace is empty.");
+const workspaceClearBtn =
+    document.getElementById("workspaceClearBtn");
 
-        return;
+if(!workspaceDownloadAllBtn || !workspaceClearBtn){
 
-    }
-
-    downloadWorkspaceZip(
-
-        window.processedWorkspace.sets,
-
-        "Images.zip"
-
+    console.warn(
+        "Workspace toolbar not ready."
     );
 
-});
+    return;
 
-document
-.getElementById("workspaceClearBtn")
-.addEventListener("click",function(){
+}
+
+workspaceDownloadAllBtn.addEventListener("click",function(){
+
+const workspaceClearBtn =
+    document.getElementById("workspaceClearBtn");
+
+if(workspaceClearBtn){
+
+    workspaceClearBtn.addEventListener("click",function(){
 
     if(
         !confirm(
@@ -5488,6 +5486,7 @@ document
 
 });
 
+}
 
 /* =======================================================
 WORKSPACE DOWNLOAD ENGINE
@@ -9210,12 +9209,23 @@ document.getElementById('downloadAllButton')
     }
 );
 
-document
-.getElementById('cancelDownloadBtn')
-.addEventListener(
-    'click',
-    requestStopOperation
-);
+window.addEventListener("load", function(){
+
+    initializeWorkspaceToolbar();
+
+    const cancelDownloadBtn =
+        document.getElementById("cancelDownloadBtn");
+
+    if(cancelDownloadBtn){
+
+        cancelDownloadBtn.addEventListener(
+            "click",
+            requestStopOperation
+        );
+
+    }
+
+});
 
 </script>
 
