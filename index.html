@@ -1618,6 +1618,22 @@ button:hover{
     cursor:pointer;
 }
 
+.image-item.enlarge-selected{
+
+    border-radius:14px;
+
+    outline:4px solid #8b5cf6;
+
+    outline-offset:4px;
+
+    box-shadow:
+        0 0 0 2px rgba(139,92,246,.35),
+        0 0 28px rgba(139,92,246,.55);
+
+    transition:.2s;
+
+}
+
 .image-item img:hover{
     transform:scale(1.03);
 
@@ -2197,6 +2213,543 @@ button:hover{
 
 }
 
+/* ==========================================================
+CARRO TOOLBAR
+========================================================== */
+
+#carroToolbar{
+
+position:fixed;
+
+left:18px;
+
+bottom:26px;
+
+display:flex;
+
+gap:12px;
+
+z-index:9000;
+
+}
+
+#carroToolbar button{
+
+background:#151515;
+
+border:1px solid rgba(222,155,20,.45);
+
+color:white;
+
+padding:10px 18px;
+
+border-radius:14px;
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+cursor:pointer;
+
+font-weight:700;
+
+transition:.25s;
+
+}
+
+#carroToolbar button:hover{
+
+transform:translateY(-3px);
+
+box-shadow:0 0 25px rgba(222,155,20,.35);
+
+}
+
+.carro-live{
+
+width:10px;
+
+height:10px;
+
+background:#2dff5b;
+
+border-radius:50%;
+
+animation:workspacePulse 1.5s infinite;
+
+}
+
+#workspaceBadge{
+
+background:#de9b14;
+
+color:#111;
+
+border-radius:999px;
+
+padding:2px 8px;
+
+font-size:12px;
+
+font-weight:800;
+
+margin-left:6px;
+
+}
+
+/* ==========================================================
+WORKSPACE PANEL
+========================================================== */
+
+#workspaceDashboard{
+
+position:fixed;
+
+top:90px;
+
+left:20px;
+
+width:330px;
+
+background:#111;
+
+border:1px solid rgba(222,155,20,.45);
+
+border-radius:18px;
+
+padding:18px;
+
+display:none;
+
+z-index:9001;
+
+box-shadow:0 0 40px rgba(0,0,0,.55);
+
+backdrop-filter:blur(12px);
+
+animation:workspaceOpen .35s;
+
+}
+
+.workspaceHeader{
+
+display:flex;
+
+justify-content:space-between;
+
+margin-bottom:18px;
+
+font-weight:700;
+
+}
+
+.workspaceLive{
+
+color:#3cff65;
+
+animation:workspacePulse 1.5s infinite;
+
+}
+
+.workspaceGrid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:14px;
+
+font-size:13px;
+
+}
+
+.workspaceGrid strong{
+
+display:block;
+
+margin-top:6px;
+
+font-size:18px;
+
+color:#de9b14;
+
+}
+
+.workspaceFooterText{
+
+margin-top:18px;
+
+font-size:11px;
+
+opacity:.7;
+
+text-align:center;
+
+}
+
+/* =======================================================
+WORKSPACE MANAGER
+======================================================= */
+
+#workspaceManager{
+
+position:fixed;
+
+top:170px;
+
+left:20px;
+
+width:380px;
+
+max-height:65vh;
+
+overflow-y:auto;
+
+display:none;
+
+background:#111;
+
+border-radius:18px;
+
+border:1px solid rgba(222,155,20,.35);
+
+box-shadow:0 0 35px rgba(0,0,0,.5);
+
+padding:16px;
+
+z-index:9002;
+
+}
+
+.workspaceManagerHeader{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:15px;
+
+font-weight:700;
+
+color:#de9b14;
+
+}
+
+.workspaceSetCard{
+
+background:#181818;
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:14px;
+
+padding:12px;
+
+margin-bottom:12px;
+
+transition:.25s;
+
+}
+
+.workspaceSetCard:hover{
+
+border-color:#de9b14;
+
+transform:translateY(-2px);
+
+}
+
+.workspaceSku{
+
+font-size:15px;
+
+font-weight:800;
+
+margin-bottom:8px;
+
+}
+
+.workspaceMeta{
+
+font-size:12px;
+
+opacity:.8;
+
+margin-bottom:10px;
+
+}
+
+.workspaceLeft{
+
+width:120px;
+
+flex-shrink:0;
+
+display:flex;
+
+flex-direction:column;
+
+gap:8px;
+
+}
+
+.workspaceRight{
+
+flex:1;
+
+display:flex;
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+.workspaceSetCard{
+
+display:flex;
+
+gap:16px;
+
+align-items:flex-start;
+
+}
+
+.workspaceSkuLabel{
+
+font-size:10px;
+
+opacity:.6;
+
+letter-spacing:1px;
+
+}
+
+.workspaceStatusBadge{
+
+background:#2ecc71;
+
+color:#111;
+
+font-size:11px;
+
+font-weight:700;
+
+padding:6px 10px;
+
+border-radius:999px;
+
+width:max-content;
+
+}
+
+.workspaceImageCount{
+
+font-size:12px;
+
+opacity:.8;
+
+}
+
+.workspaceTime{
+
+font-size:11px;
+
+opacity:.6;
+
+}
+
+.workspaceOutputTitle{
+
+font-size:11px;
+
+color:#de9b14;
+
+font-weight:700;
+
+}
+
+.workspaceOutput{
+
+width:100%;
+
+height:72px;
+
+resize:none;
+
+font-size:11px;
+
+background:#0d0d0d;
+
+color:white;
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:10px;
+
+padding:8px;
+
+}
+
+.workspaceThumbRow{
+
+display:flex;
+
+gap:8px;
+
+overflow-x:auto;
+
+padding-top:4px;
+
+}
+
+.workspaceThumb{
+
+        width:72px;
+
+        height:72px;
+
+        object-fit:cover;
+
+        border-radius:8px;
+
+        border:1px solid rgba(255,255,255,.08);
+
+        flex-shrink:0;
+
+        transition:.25s;
+
+    }
+
+    .workspaceThumb:hover{
+
+        transform:scale(1.08);
+
+        border-color:#de9b14;
+
+}
+
+.workspaceButtons{
+
+    display:flex;
+
+    gap:6px;
+
+    margin-top:10px;
+
+}
+
+.workspaceButtons button{
+
+    flex:1;
+
+    padding:8px;
+
+    font-size:11px;
+
+    margin:0;
+
+}
+
+/* ==========================================================
+SUMMARY
+========================================================== */
+
+#workspaceSummary{
+
+    position:fixed;
+
+    bottom:18px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:#111;
+
+    border:1px solid rgba(222,155,20,.35);
+
+    border-radius:999px;
+
+    padding:12px 22px;
+
+    display:flex;
+
+    gap:22px;
+
+    align-items:center;
+
+    z-index:8000;
+
+    box-shadow:0 0 30px rgba(0,0,0,.5);
+
+}
+
+.workspace-selected{
+
+    outline:4px solid #ffb300;
+
+    border-radius:18px;
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 0 35px rgba(255,179,0,.45);
+
+}
+
+.workspace-selected img{
+
+    border-color:#ffb300;
+
+}
+
+.summaryReady{
+
+color:#45ff73;
+
+}
+
+@keyframes workspacePulse{
+
+0%,100%{
+
+opacity:1;
+
+}
+
+50%{
+
+opacity:.35;
+
+}
+
+}
+
+@keyframes workspaceOpen{
+
+from{
+
+opacity:0;
+
+transform:translateY(-18px) scale(.95);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0) scale(1);
+
+}
+
+}
+
 .app-footer{
 
     margin-top:40px;
@@ -2307,6 +2860,229 @@ placeholder="Search image name..."
 
 <div id="imageContainer"></div>
 
+<!-- ===========================
+CARRO TOOLBAR
+============================ -->
+
+<div id="carroToolbar">
+
+    <button id="carroButton">
+
+        😊
+
+        <span>Carro</span>
+
+        <span class="carro-live"></span>
+
+    </button>
+
+    <button id="workspaceButton">
+
+        📦 Workspace
+
+        <span id="workspaceBadge">
+
+            0
+
+        </span>
+
+    </button>
+
+</div>
+
+
+<!-- ===========================
+WORKSPACE DASHBOARD
+============================ -->
+
+<div id="workspaceDashboard">
+
+    <div class="workspaceHeader">
+
+        <span>
+
+            WORKSPACE
+
+        </span>
+
+        <span class="workspaceLive">
+
+            ● LIVE
+
+        </span>
+
+    </div>
+
+    <div class="workspaceGrid">
+
+        <div>
+
+            <small>Processed Sets</small>
+
+            <strong id="workspaceProcessed">
+
+                0
+
+            </strong>
+
+            /1000
+
+        </div>
+
+        <div>
+
+            <small>Current Set</small>
+
+            <strong id="workspaceCurrent">
+
+                —
+
+            </strong>
+
+            <div id="workspaceImages">
+
+                0 Images
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <small>Status</small>
+
+            <strong id="workspaceStatus">
+
+                READY
+
+            </strong>
+
+            <div>
+
+                Just now
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <small>Export</small>
+
+            <strong>
+
+                Ready to Export
+
+            </strong>
+
+        </div>
+
+    </div>
+
+    <div class="workspaceFooterText">
+
+        Double-click anywhere to close
+
+    </div>
+
+</div>
+
+
+<!-- ===========================
+SUMMARY BAR
+============================ -->
+
+<div id="workspaceManager">
+
+<div class="workspaceManagerHeader">
+
+    <div>
+
+        📦 Workspace Manager
+
+    </div>
+
+    <div
+        style="
+            display:flex;
+            gap:8px;
+            align-items:center;
+        ">
+
+        <button
+            id="workspaceDownloadAllBtn"
+            style="
+                margin:0;
+                padding:6px 12px;
+                font-size:11px;
+            ">
+            ⬇ Download All
+        </button>
+
+        <button
+            id="workspaceClearBtn"
+            style="
+                margin:0;
+                padding:6px 12px;
+                font-size:11px;
+                background:#ff3b30;
+                color:white;
+            ">
+            🗑 Clear
+        </button>
+
+        <div id="workspaceManagerCount">
+
+            0 Processed Sets
+
+        </div>
+
+    </div>
+
+</div>
+
+    <div id="workspaceSetList">
+
+    </div>
+
+</div>
+
+<div id="workspaceSummary">
+
+    📁 Workspace Summary
+
+    <span>
+
+        Processed Sets:
+
+        <strong id="summaryProcessed">
+
+            0
+
+        </strong>
+
+    </span>
+
+    <span class="summaryReady">
+
+        🟢 Ready to Export
+
+    </span>
+
+    <span>
+
+        Total Images:
+
+        <strong id="summaryImages">
+
+            0
+
+        </strong>
+
+    </span>
+
+</div>
+
 </div>
 
 <!-- PREVIEW MODAL -->
@@ -2367,7 +3143,29 @@ placeholder="Search image name..."
                     <button id="previewDownloadEnlargedBtn" class="preview-enlarge-btn preview-enlarge-btn--accent" disabled>&#11015; Download</button>
                 </div>
 
-                <div class="preview-enlarge-status" id="previewEnlargeStatus"></div>
+                <div class="preview-enlarge-row">
+
+    <div
+        id="enlargeSelectionStatus"
+        style="
+            width:100%;
+            padding:8px 12px;
+            border-radius:8px;
+            background:#1f1f1f;
+            color:#de9b14;
+            font-size:11px;
+            font-weight:bold;
+            letter-spacing:.5px;
+        ">
+        None Selected
+    </div>
+
+</div>
+
+<div
+    class="preview-enlarge-status"
+    id="previewEnlargeStatus">
+</div>
 
             </div>
 
@@ -2571,6 +3369,493 @@ function setFilterActiveState(active){
     updateStats();
 
 }
+
+/* ==========================================================
+   RC6 PIPELINE CONTROLLER
+   Foundation Module
+========================================================== */
+
+const Pipeline = {
+
+    version: "RC6",
+
+    queue: [],
+
+    running: new Map(),
+
+    completed: new Map(),
+
+    failed: new Map(),
+
+    listeners: {},
+
+    nextId: 1,
+
+    createTask(type, payload = {}){
+
+        const task = {
+
+            id: this.nextId++,
+
+            type,
+
+            status: "QUEUED",
+
+            created: performance.now(),
+
+            updated: performance.now(),
+
+            payload
+
+        };
+
+        this.queue.push(task);
+
+        this.emit("taskQueued", task);
+
+        return task;
+
+    },
+
+    startTask(task){
+
+        task.status = "RUNNING";
+
+        task.updated = performance.now();
+
+        this.running.set(task.id, task);
+
+        this.emit("taskStarted", task);
+
+    },
+
+    finishTask(task){
+
+        task.status = "COMPLETED";
+
+        task.updated = performance.now();
+
+        this.running.delete(task.id);
+
+        this.completed.set(task.id, task);
+
+        this.emit("taskCompleted", task);
+
+    },
+
+    failTask(task, error){
+
+        task.status = "FAILED";
+
+        task.error = error;
+
+        task.updated = performance.now();
+
+        this.running.delete(task.id);
+
+        this.failed.set(task.id, task);
+
+        this.emit("taskFailed", task);
+
+    },
+
+    on(event, callback){
+
+        if(!this.listeners[event]){
+
+            this.listeners[event] = [];
+
+        }
+
+        this.listeners[event].push(callback);
+
+    },
+
+    emit(event, data){
+
+        if(!this.listeners[event]) return;
+
+        this.listeners[event].forEach(fn=>fn(data));
+
+    },
+
+    isRunning:false,
+
+    maxConcurrent:2,
+
+    async processQueue(){
+
+        if(this.isRunning) return;
+
+        this.isRunning = true;
+
+        while(this.queue.length){
+
+            if(this.running.size >= this.maxConcurrent){
+
+                await new Promise(r=>setTimeout(r,10));
+
+                continue;
+
+            }
+
+            const task = this.queue.shift();
+
+            this.execute(task);
+
+        }
+
+        this.isRunning = false;
+
+    },
+
+    async execute(task){
+
+        try{
+
+            this.startTask(task);
+
+            this.emit("taskProcessing",task);
+
+            /* Future worker chain
+
+            Download
+            ↓
+            Cache
+            ↓
+            Smart Enlargement
+            ↓
+            Workspace
+            ↓
+            Preview
+
+            */
+
+            this.finishTask(task);
+
+        }
+
+        catch(error){
+
+            this.failTask(task,error);
+
+        }
+
+}
+
+};
+
+console.log(
+    "%cRC6 Pipeline Ready",
+    "color:#de9b14;font-weight:bold;"
+);
+
+/* ==========================================================
+   RC6 IMAGE TASK MODEL
+========================================================== */
+
+class ImageTask{
+
+    constructor(url, options={}){
+
+        this.id =
+            crypto.randomUUID
+                ? crypto.randomUUID()
+                : "img_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+        this.url =
+            url;
+
+        this.filename =
+            "";
+
+        this.smartId =
+            "";
+
+        this.setId =
+            "";
+
+        this.groupId =
+            "";
+
+        this.label =
+            "";
+
+        this.status =
+            "QUEUED";
+
+        this.originalBlob =
+            null;
+
+        this.processedBlob =
+            null;
+
+        this.imageBitmap =
+            null;
+
+        this.metadata = {
+
+            width:0,
+
+            height:0,
+
+            size:0,
+
+            type:"",
+
+            duplicate:false,
+
+            downloaded:false,
+
+            processed:false,
+
+            enlarged:false
+
+        };
+
+        this.timestamps = {
+
+            created:Date.now(),
+
+            downloaded:null,
+
+            processed:null,
+
+            exported:null
+
+        };
+
+        Object.assign(this, options);
+
+    }
+
+}
+
+/* ==========================================================
+   RC6 WORKSPACE STORE
+========================================================== */
+
+const Workspace = {
+
+    images: new Map(),
+
+    groups: new Map(),
+
+    sets: new Map(),
+
+    selected: new Set(),
+
+    filters: {},
+
+    statistics: {
+
+        total:0,
+
+        queued:0,
+
+        processing:0,
+
+        completed:0,
+
+        failed:0
+
+    },
+
+    add(task){
+
+        this.images.set(task.id, task);
+
+        this.statistics.total++;
+
+        this.statistics.queued++;
+
+        Pipeline.emit("workspace:imageAdded", task);
+
+        return task;
+
+    },
+
+    get(id){
+
+        return this.images.get(id);
+
+    },
+
+    remove(id){
+
+        if(!this.images.has(id)) return false;
+
+        this.images.delete(id);
+
+        Pipeline.emit("workspace:imageRemoved", id);
+
+        return true;
+
+    },
+
+    all(){
+
+        return Array.from(this.images.values());
+
+    },
+
+    clear(){
+
+        this.images.clear();
+
+        this.groups.clear();
+
+        this.sets.clear();
+
+        this.selected.clear();
+
+        this.statistics = {
+
+            total:0,
+
+            queued:0,
+
+            processing:0,
+
+            completed:0,
+
+            failed:0
+
+        };
+
+        Pipeline.emit("workspace:cleared");
+
+    }
+
+};
+
+console.log(
+    "%cRC6 Workspace Ready",
+    "color:#45b97c;font-weight:bold;"
+);
+
+/* ==========================================================
+   RC6 CACHE MANAGER
+========================================================== */
+
+const CacheManager = {
+
+    blobs: new Map(),
+
+    bitmaps: new Map(),
+
+    processed: new Map(),
+
+    metadata: new Map(),
+
+    hasBlob(key){
+
+        return this.blobs.has(key);
+
+    },
+
+    getBlob(key){
+
+        return this.blobs.get(key);
+
+    },
+
+    setBlob(key, blob){
+
+        this.blobs.set(key, blob);
+
+        return blob;
+
+    },
+
+    getBitmap(key){
+
+        return this.bitmaps.get(key);
+
+    },
+
+    setBitmap(key, bitmap){
+
+        this.bitmaps.set(key, bitmap);
+
+        return bitmap;
+
+    },
+
+    getProcessed(key){
+
+        return this.processed.get(key);
+
+    },
+
+    setProcessed(key, blob){
+
+        this.processed.set(key, blob);
+
+        return blob;
+
+    },
+
+    getMetadata(key){
+
+        return this.metadata.get(key);
+
+    },
+
+    setMetadata(key, data){
+
+        this.metadata.set(key, data);
+
+    },
+
+    remove(key){
+
+        this.blobs.delete(key);
+
+        this.bitmaps.delete(key);
+
+        this.processed.delete(key);
+
+        this.metadata.delete(key);
+
+    },
+
+    clear(){
+
+        this.blobs.clear();
+
+        this.bitmaps.clear();
+
+        this.processed.clear();
+
+        this.metadata.clear();
+
+        Pipeline.emit("cache:cleared");
+
+    },
+
+    statistics(){
+
+        return {
+
+            blobs:this.blobs.size,
+
+            bitmaps:this.bitmaps.size,
+
+            processed:this.processed.size,
+
+            metadata:this.metadata.size
+
+        };
+
+    }
+
+};
+
+console.log(
+    "%cRC6 Cache Ready",
+    "color:#58a6ff;font-weight:bold;"
+);
 
 function updateStats(){
 
@@ -2838,6 +4123,108 @@ function refreshRowOutput(row){
 
 }
 
+/* ===========================================================
+   SMART ENLARGER SELECTION ENGINE
+=========================================================== */
+
+const selectedForEnlarge = new Set();
+
+function toggleEnlargeSelection(item){
+
+    if(selectedForEnlarge.has(item)){
+
+        selectedForEnlarge.delete(item);
+
+        item.classList.remove('enlarge-selected');
+
+    }else{
+
+        selectedForEnlarge.add(item);
+
+        item.classList.add('enlarge-selected');
+
+    }
+
+    if(typeof updateEnlargeSelectionUI === "function"){
+        updateEnlargeSelectionUI();
+    }
+
+}
+
+function clearEnlargeSelection(){
+
+    selectedForEnlarge.forEach(item=>{
+        item.classList.remove("enlarge-selected");
+    });
+
+    selectedForEnlarge.clear();
+
+    if(typeof updateEnlargeSelectionUI === "function"){
+        updateEnlargeSelectionUI();
+    }
+
+}
+
+function getSelectedEnlargeItems(){
+
+    function updateEnlargeSelectionUI(){
+
+    const status =
+        document.getElementById("enlargeSelectionStatus");
+
+    if(!status) return;
+
+    const items =
+        Array.from(selectedForEnlarge);
+
+    if(items.length===0){
+
+        status.textContent =
+            "None Selected";
+
+        return;
+
+    }
+
+    const positions =
+        items
+        .map(getPositionNumber)
+        .filter(n=>n!==null)
+        .sort((a,b)=>a-b);
+
+    if(positions.length===1){
+
+        status.textContent =
+            positions[0].toString().padStart(2,"0") + " Only";
+
+        return;
+
+    }
+
+    const continuous =
+        positions.every((v,i)=> i===0 || v===positions[i-1]+1);
+
+    if(continuous){
+
+        status.textContent =
+            "From: "
+            + positions[0].toString().padStart(2,"0")
+            + " → "
+            + positions[positions.length-1].toString().padStart(2,"0");
+
+        return;
+
+    }
+
+    status.textContent =
+        items.length + " Selected";
+
+}
+
+    return Array.from(selectedForEnlarge);
+
+}
+
 /* ============ UNDO SYSTEM ============ */
 
 let undoStack = [];
@@ -3044,7 +4431,7 @@ function buildPositionToken(indexInSet){
 function renumberSetSequence(rowContainer){
 
     const items =
-        Array.from(rowContainer.querySelectorAll('.image-item'));
+        rowState.items;
 
     const batch = [];
 
@@ -3258,21 +4645,54 @@ function renderPreview(){
     currentGallery.forEach((thumbUrl, i) => {
 
         const thumb =
+
+
             document.createElement('img');
 
         thumb.src = thumbUrl;
 
-        thumb.className =
-            'preview-thumb' + (i === currentIndex ? ' active-thumb' : '');
+        thumb.className = 'preview-thumb';
+
+            if(i === currentIndex){
+                thumb.classList.add('active-thumb');
+            }
+
+            if(
+                window.selectedForEnlarge &&
+                window.selectedForEnlarge.has(i)
+            ){
+                thumb.classList.add('enlarge-selected');
+            };
 
         thumb.addEventListener('click', function(){
+
+            if(!window.selectedForEnlarge){
+                window.selectedForEnlarge = new Set();
+            }
+
+            if(window.selectedForEnlarge.has(i)){
+                window.selectedForEnlarge.delete(i);
+            }else{
+                window.selectedForEnlarge.add(i);
+            }
+
             currentIndex = i;
+
             renderPreview();
+
+            if(typeof updateEnlargeSelectionStatus === 'function'){
+                updateEnlargeSelectionStatus();
+            }
+
         });
 
         thumbsContainer.appendChild(thumb);
 
     });
+
+        if(typeof updateEnlargeSelectionStatus === 'function'){
+            updateEnlargeSelectionStatus();
+    }
 
 }
 
@@ -3381,12 +4801,180 @@ let enlargedBlob = null;
 
 let enlargedFilename = '';
 
+let enlargedBatch = [];
+
+let enlargedBatchIndex = 0;
+
+let previewUsingEnlarged = false;
+
+/*
+==========================================================
+PROCESSOR WORKSPACE
+Stores every completed set until Export.
+==========================================================
+*/
+
+window.processedWorkspace = {
+
+    processedCount: 0,
+
+    sets: Object.create(null)
+
+};
+
+function updateEnlargeSelectionStatus(){
+
+    const status =
+        document.getElementById(
+            'enlargeSelectionStatus'
+        );
+
+    if(!status){
+        return;
+    }
+
+    const selected =
+        window.selectedForEnlarge
+        ? Array.from(window.selectedForEnlarge)
+            .sort(function(a,b){
+                return a-b;
+            })
+        : [];
+
+    if(selected.length === 0){
+
+        status.textContent =
+            'None Selected';
+
+        return;
+
+    }
+
+    if(selected.length === 1){
+
+        status.textContent =
+            String(selected[0] + 1)
+                .padStart(2,'0')
+            + ' Only';
+
+        return;
+
+    }
+
+    let consecutive = true;
+
+    for(let i=1;i<selected.length;i++){
+
+        if(selected[i] !== selected[i-1] + 1){
+
+            consecutive = false;
+            break;
+
+        }
+
+    }
+
+    if(consecutive){
+
+        status.textContent =
+            'From: '
+            + String(selected[0] + 1).padStart(2,'0')
+            + ' → '
+            + String(selected[selected.length-1] + 1).padStart(2,'0');
+
+    }else{
+
+        status.textContent =
+            selected.length + ' Selected';
+
+    }
+
+}
+
 function setEnlargeStatus(message){
+
+    message =
+        String(message || '')
+            .replace(/\s+/g,' ')
+            .trim();
+
+    const status =
+        document.getElementById(
+            'previewEnlargeStatus'
+        );
+
+    if(!status){
+        return;
+    }
+
+status.textContent = message;
 
     const el =
         document.getElementById('previewEnlargeStatus');
 
     if(el) el.textContent = message || '';
+
+}
+
+function getCurrentSetId(){
+
+    if(!currentGallery || !currentGallery.length){
+        return '';
+    }
+
+    const first =
+        extractImageId(currentGallery[0]);
+
+    return first
+        .replace(/\.[^.]+$/,'')
+        .replace(/_(master|\d+)$/i,'');
+
+}
+
+function saveProcessedSet(images){
+
+    const setId =
+        getCurrentSetId();
+
+    if(!setId){
+        return;
+    }
+
+    window.processedWorkspace.sets[setId] = {
+
+        processed: true,
+
+        processedAt:
+            new Date().toISOString(),
+
+        images:
+
+            images.map(function(image){
+
+                return{
+
+                    ...image,
+
+                    objectURL:
+
+                        URL.createObjectURL(
+                            image.blob
+                        ),
+
+                    size:
+
+                        image.blob.size
+
+                };
+
+            })
+
+    };
+
+    window.processedWorkspace.processedCount =
+        Object.keys(
+            window.processedWorkspace.sets
+        ).length;
 
 }
 
@@ -3406,10 +4994,28 @@ function resetEnlargeState(){
 document.getElementById('previewEnlargeBtn')
 .addEventListener('click', async function(){
 
-    if(currentGallery.length === 0) return;
+    const selected =
+        window.selectedForEnlarge
+            ? Array.from(window.selectedForEnlarge)
+                .sort(function(a,b){
+                    return a-b;
+                })
+            : [];
+
+    const targets =
+        selected.length
+            ? selected
+            : [currentIndex];
+
+        if(currentGallery.length === 0) return;
 
     const url =
-        currentGallery[currentIndex];
+        currentGallery[targets[0]];
+
+    const urls =
+        targets.map(function(index){
+            return currentGallery[index];
+        });
 
     const targetW =
         parseInt(document.getElementById('enlargeWidth').value, 10) || 1500;
@@ -3433,33 +5039,94 @@ document.getElementById('previewEnlargeBtn')
 
     setEnlargeStatus('Enlarging...');
 
-    try{
+        try{
 
-        const blob =
-            await canvasPadImageBlob(url, targetW, targetH, marginPx);
+        const enlargedResults = [];
 
-        if(!enlargeOriginalUrl) enlargeOriginalUrl = url;
+        for(const imageUrl of urls){
 
-        enlargedBlob = blob;
+            const blob =
+                await canvasPadImageBlob(
+                    imageUrl,
+                    targetW,
+                    targetH,
+                    marginPx
+                );
+
+            enlargedResults.push({
+
+                url: imageUrl,
+
+                blob: blob,
+
+            filename:
+                extractImageId(imageUrl)
+                    .replace(/\.[^.]+$/, '')
+                + '.JPG'
+
+            });
+
+        }
+
+        if(!enlargeOriginalUrl){
+            enlargeOriginalUrl = url;
+        }
+
+        enlargedBlob =
+            enlargedResults[0].blob;
+
+        enlargedFilename =
+            enlargedResults[0].filename;
 
         const objectUrl =
-            URL.createObjectURL(blob);
+            URL.createObjectURL(
+                enlargedResults[0].blob
+            );
 
-        document.getElementById('previewImage').src = objectUrl;
+        document.getElementById('previewImage').src =
+            objectUrl;
 
-        const baseName =
-            extractImageId(url).replace(/\.[^.]+$/, '');
+        window.enlargedBatch = enlargedResults;
 
-        enlargedFilename = baseName + '_' + targetW + 'x' + targetH + '.png';
+        saveProcessedSet(enlargedResults);
 
-        document.getElementById('previewUndoEnlargeBtn').disabled = false;
-        document.getElementById('previewDownloadEnlargedBtn').disabled = false;
+        refreshWorkspaceUI();
 
-        setEnlargeStatus('Enlarged to ' + targetW + '\u00D7' + targetH + ' — preview updated. Not saved until you download.');
+        enlargedBatch = enlargedResults;
+
+        enlargedBatchIndex = 0;
+
+        previewUsingEnlarged = true;
+
+        document.getElementById(
+            'previewUndoEnlargeBtn'
+        ).disabled = false;
+
+        document.getElementById(
+            'previewDownloadEnlargedBtn'
+        ).disabled = false;
+
+        setEnlargeStatus(
+
+            enlargedResults.length
+
+            + ' image(s) processed. '
+
+            + 'Workspace: '
+
+            + window.processedWorkspace.processedCount
+
+            + ' set(s) ready.'
+
+        );
 
     }catch(e){
 
-        setEnlargeStatus('Couldn\'t load that image (cross-origin restrictions) — try opening it in a new tab instead.');
+        console.error(e);
+
+        setEnlargeStatus(
+            'Couldn\'t enlarge one or more images.'
+        );
 
     }
 
@@ -3481,6 +5148,489 @@ document.getElementById('previewUndoEnlargeBtn')
 
 });
 
+/* =======================================================
+WORKSPACE UI
+======================================================= */
+
+document
+.getElementById("workspaceButton")
+.addEventListener("click",function(){
+
+const panel =
+document.getElementById("workspaceDashboard");
+
+const visible =
+    panel.style.display==="block";
+
+panel.style.display =
+visible
+?"none"
+:"block";
+
+document.getElementById(
+"workspaceManager"
+).style.display =
+visible
+?"none"
+:"block";
+
+});
+
+document
+.getElementById("workspaceDashboard")
+.addEventListener("dblclick",function(){
+
+this.style.display="none";
+
+});
+
+function refreshWorkspaceUI(){
+
+    const count =
+    window.processedWorkspace
+    ?window.processedWorkspace.processedCount
+    :0;
+
+    document.getElementById(
+    "workspaceBadge"
+    ).textContent =
+    count;
+
+    document.getElementById(
+    "workspaceProcessed"
+    ).textContent =
+    count;
+
+    document.getElementById(
+    "summaryProcessed"
+    ).textContent =
+    count;
+
+    let totalImages = 0;
+
+    if(window.processedWorkspace){
+
+    Object.values(
+    window.processedWorkspace.sets
+    ).forEach(function(set){
+
+    totalImages +=
+    set.images.length;
+
+    });
+
+    }
+
+    document.getElementById(
+    "summaryImages"
+    ).textContent =
+    totalImages;
+
+    renderWorkspaceManager();
+
+}
+
+function renderWorkspaceManager(){
+
+    const list =
+        document.getElementById("workspaceSetList");
+
+    if(!list) return;
+
+    list.innerHTML = "";
+
+    const workspace =
+        window.processedWorkspace;
+
+    if(!workspace) return;
+
+    const entries =
+        Object.entries(workspace.sets);
+
+    document.getElementById(
+        "workspaceManagerCount"
+    ).textContent =
+        entries.length + " Processed Sets";
+
+    entries.forEach(function(entry){
+
+        const sku = entry[0];
+        const set = entry[1];
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "workspaceSetCard";
+
+        card.innerHTML =
+
+        '<div class="workspaceLeft">'+
+
+            '<div class="workspaceSkuLabel">SKU</div>'+
+
+            '<div class="workspaceSku">'+sku+'</div>'+
+
+            '<div class="workspaceStatusBadge">✔ PROCESSED</div>'+
+
+            '<div class="workspaceImageCount">'+
+                set.images.length+
+                ' Images'+
+            '</div>'+
+
+            '<div class="workspaceTime">'+
+                new Date(set.timestamp).toLocaleString()+
+            '</div>'+
+
+            '<div class="workspaceButtons">'+
+
+                '<button class="copyWorkspaceBtn">COPY SET URLS</button>'+
+
+                '<button class="deleteWorkspaceBtn">DELETE SET</button>'+
+
+                '<button class="downloadWorkspaceBtn">DOWNLOAD SET</button>'+
+
+            '</div>'+
+
+        '</div>'+
+
+        '<div class="workspaceRight">'+
+
+            '<div class="workspaceOutputTitle">OUTPUT</div>'+
+
+            '<textarea class="workspaceOutput" readonly></textarea>'+
+
+            '<div class="workspaceThumbRow"></div>'+
+
+        '</div>';
+
+        list.appendChild(card);
+
+        const output =
+            card.querySelector(".workspaceOutput");
+
+        output.value =
+            set.images
+            .map(function(img,index){
+
+                return "ITEMIMAGEURL"
+                    +(index+1)
+                    +"="
+                    +(img.url || "");
+
+            })
+            .join(",");
+
+        const thumbRow =
+            card.querySelector(".workspaceThumbRow");
+
+        set.images.forEach(function(img){
+
+            const image =
+                document.createElement("img");
+
+                    image.src =
+
+                        img.objectURL ||
+
+                        img.url;
+
+            image.className =
+                "workspaceThumb";
+
+            thumbRow.appendChild(image);
+
+        });
+
+        /* ===============================
+           COPY SET URLS
+        ============================== */
+
+        card
+        .querySelector(".copyWorkspaceBtn")
+        .addEventListener("click", function(){
+
+            navigator.clipboard.writeText(
+                output.value
+            );
+
+            if(typeof showCopyToast === "function"){
+
+                showCopyToast(
+                    "Set URLs copied."
+                );
+
+            }else{
+
+                alert(
+                    "Set URLs copied."
+                );
+
+            }
+
+        });
+
+        /* ===============================
+           DELETE SET
+        ============================== */
+
+        card
+        .querySelector(".deleteWorkspaceBtn")
+        .addEventListener("click", function(){
+
+            if(!confirm(
+                "Delete this processed set?"
+            )){
+                return;
+            }
+
+            releaseWorkspaceSet(
+
+                window
+                .processedWorkspace
+                .sets[sku]
+
+            );
+
+            delete window
+                .processedWorkspace
+                .sets[sku];
+
+            if(
+                window.processedWorkspace.processedCount > 0
+            ){
+                window.processedWorkspace.processedCount--;
+            }
+
+            refreshWorkspaceUI();
+
+        });
+
+        /* ===============================
+           DOWNLOAD SET
+        ============================== */
+
+        card
+            .querySelector(".downloadWorkspaceBtn")
+            .addEventListener("click", function(){
+
+        downloadWorkspaceZip(
+            {
+                [sku]: set
+            },
+            sku + ".zip"
+        );
+
+    });
+
+});
+
+}
+
+/* =======================================================
+WORKSPACE TOOLBAR
+======================================================= */
+
+document
+.getElementById("workspaceDownloadAllBtn")
+.addEventListener("click",function(){
+
+    if(
+        !window.processedWorkspace ||
+        Object.keys(window.processedWorkspace.sets).length===0
+    ){
+
+        alert("Workspace is empty.");
+
+        return;
+
+    }
+
+    downloadWorkspaceZip(
+
+        window.processedWorkspace.sets,
+
+        "Images.zip"
+
+    );
+
+});
+
+document
+.getElementById("workspaceClearBtn")
+.addEventListener("click",function(){
+
+    if(
+        !confirm(
+            "Clear the entire Workspace?"
+        )
+    ){
+        return;
+    }
+
+    Object.values(
+
+        window.processedWorkspace.sets
+
+    ).forEach(
+
+        releaseWorkspaceSet
+
+    );
+
+    window.processedWorkspace.sets =
+        Object.create(null);
+
+    window.processedWorkspace.processedCount =
+        0;
+
+    refreshWorkspaceUI();
+
+});
+
+
+/* =======================================================
+WORKSPACE DOWNLOAD ENGINE
+======================================================= */
+
+async function downloadWorkspaceZip(setMap, zipFilename){
+
+    if(typeof JSZip==="undefined"){
+
+        alert("JSZip is not loaded.");
+        return;
+
+    }
+
+    const zip = new JSZip();
+
+    openDownloadProgress();
+
+    const allSets =
+        Object.entries(setMap);
+
+    const totalImages =
+        allSets.reduce(function(total,[,set]){
+
+            return total + set.images.length;
+
+        },0);
+
+    let processed = 0;
+
+    for(const [sku,set] of allSets){
+
+        document.getElementById(
+            "downloadProgressText"
+        ).textContent =
+
+            "Processing "
+
+            + sku
+
+            + " (" + processed + "/" + totalImages + ")";
+
+        const folder =
+            allSets.length===1
+            ? zip
+            : zip.folder(sku);
+
+        for(const image of set.images){
+
+            if(stopRequested){
+
+                closeDownloadProgress();
+
+                endCancellableOperation();
+
+                return;
+
+            }
+
+            if(!image.blob){
+
+                processed++;
+
+                continue;
+
+            }
+
+            folder.file(
+                image.filename,
+                image.blob
+            );
+
+            processed++;
+
+            updateDownloadProgress(
+                processed,
+                totalImages
+            );
+
+        }
+
+    }
+
+document.getElementById(
+    "downloadProgressText"
+).textContent =
+
+"Creating ZIP...";
+
+const blob =
+    await zip.generateAsync({
+
+        type:"blob"
+
+    });
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        URL.createObjectURL(blob);
+
+    link.download =
+        zipFilename;
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    closeDownloadProgress();
+
+    endCancellableOperation();
+
+    URL.revokeObjectURL(link.href);
+
+}
+
+/* =======================================================
+WORKSPACE MEMORY MANAGER
+======================================================= */
+
+function releaseWorkspaceSet(set){
+
+    if(!set || !set.images){
+        return;
+    }
+
+    set.images.forEach(function(image){
+
+        if(image.objectURL){
+
+            URL.revokeObjectURL(
+                image.objectURL
+            );
+
+        }
+
+    });
+
+}
+
 document.getElementById('previewDownloadEnlargedBtn')
 .addEventListener('click', function(){
 
@@ -3493,7 +5643,7 @@ document.getElementById('previewDownloadEnlargedBtn')
         document.createElement('a');
 
     a.href = objectUrl;
-    a.download = enlargedFilename || 'enlarged.png';
+    a.download = enlargedFilename || 'enlarged.JPG';
 
     document.body.appendChild(a);
     a.click();
@@ -3920,7 +6070,7 @@ async function canvasPadImageBlob(url, targetW, targetH, marginPx, signal){
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
 
     return new Promise(resolve => {
-        canvas.toBlob(resolve, 'image/png');
+        canvas.toBlob(resolve, 'image/jpeg', 0.95);
     });
 
 }
@@ -4260,7 +6410,7 @@ async function enlargeMatchedImages(matchedItems, targetW, targetH, marginPx){
         let filename =
             (getItemDisplayName(item) || extractImageId(img.src)).replace(/\.[^.]+$/, '');
 
-        filename += '_' + targetW + 'x' + targetH + '.png';
+        filename += '.JPG';
 
         if(usedNames.has(filename)){
             filename = Date.now() + '_' + filename;
@@ -5652,6 +7802,76 @@ document.getElementById('agentCloseBtn')
 
 });
 
+/* ==========================================
+   WORKSPACE SELECTION ENGINE
+========================================== */
+
+const workspaceSelection = new Set();
+
+function toggleEnlargeSelection(item){
+
+    if(!item) return;
+
+    const id =
+        item.dataset.url ||
+        item.dataset.label;
+
+    if(!id) return;
+
+    if(workspaceSelection.has(id)){
+
+        workspaceSelection.delete(id);
+
+        item.classList.remove("workspace-selected");
+
+    }else{
+
+        workspaceSelection.add(id);
+
+        item.classList.add("workspace-selected");
+
+    }
+
+    updateWorkspaceSummary();
+
+}
+
+function clearWorkspaceSelection(){
+
+    workspaceSelection.clear();
+
+    document
+        .querySelectorAll(".workspace-selected")
+        .forEach(el=>{
+            el.classList.remove("workspace-selected");
+        });
+
+    updateWorkspaceSummary();
+
+}
+
+function getWorkspaceItems(){
+
+    return Array.from(document.querySelectorAll(".workspace-selected"));
+
+}
+
+function updateWorkspaceSummary(){
+
+    const total =
+        workspaceSelection.size;
+
+    const badge =
+        document.getElementById("workspaceSelectionCount");
+
+    if(badge){
+
+        badge.textContent = total;
+
+    }
+
+}
+
 /* ============ MAIN PARSER ============ */
 
 function createSetOutputPanel(){
@@ -5987,6 +8207,9 @@ function parseImageData(){
 
     const seenUrls = new Set();
 
+    const fragment =
+        document.createDocumentFragment();
+
     let renderIndex = 0;
 
     function renderRow(line){
@@ -5996,6 +8219,21 @@ function parseImageData(){
 
         rowContainer.className =
             'excel-row';
+
+        const rowContentFragment =
+            document.createDocumentFragment();
+
+        const rowState = {
+
+            items: [],
+
+            images: [],
+
+            urls: []
+
+        };
+
+        rowContainer._state = rowState;
 
         rowContainer.dataset.originalLine =
             line;
@@ -6043,9 +8281,7 @@ function parseImageData(){
         async function(){
 
             const items =
-                Array.from(
-                    rowContainer.querySelectorAll('.image-item')
-                );
+                rowState.items;
 
             const result =
                 await downloadMatchedImages(items);
@@ -6087,18 +8323,11 @@ function parseImageData(){
         rowContent.appendChild(actionWrapper);
 
         rowContainer.appendChild(rowTopBar);
-        rowContainer.appendChild(rowContent);
+        rowContent.appendChild(rowContentFragment);
 
         copySetBtn.addEventListener('click', function(){
 
-            const imgs =
-                rowContainer.querySelectorAll('img');
-
-            const urls = [];
-
-            imgs.forEach(img => {
-                urls.push(img.src);
-            });
+        const urls = rowState.urls;
 
             navigator.clipboard.writeText(
                 urls.join('\n')
@@ -6202,6 +8431,8 @@ function parseImageData(){
 
             item.className =
                 'image-item';
+            
+            item.dataset.line = renderIndex;
 
             item.dataset.originalFilename =
                 filename;
@@ -6221,7 +8452,21 @@ function parseImageData(){
 
             img.src = url;
 
+            rowState.images.push(img);
+
+            rowState.urls.push(url);
+
+            item.dataset.url = url;
+
             img.loading = "lazy";
+
+            img.decoding = "async";
+
+            if("fetchPriority" in img){
+
+                img.fetchPriority = "low";
+
+            }
 
             img.alt = filename;
 
@@ -6289,6 +8534,8 @@ function parseImageData(){
             labelElem.textContent =
                 filename;
 
+            item.dataset.label = filename;
+
             labelElem.title =
                 'Double-click to copy filename';
 
@@ -6310,6 +8557,32 @@ function parseImageData(){
             item.appendChild(deleteBtn);
             item.appendChild(labelElem);
 
+            item.addEventListener("click",function(e){
+
+                if(
+                    e.target.closest("button") ||
+                    e.target.closest(".delete-btn")
+                ){
+                    return;
+                }
+
+                toggleEnlargeSelection(item);
+
+            });
+
+            item.addEventListener("click",function(e){
+
+                if(
+                    e.target.closest("button") ||
+                    e.target.closest(".delete-btn")
+                ){
+                    return;
+                }
+
+                toggleEnlargeSelection(item);
+
+            });
+
             if(isMalformed){
 
                 const warn =
@@ -6323,6 +8596,14 @@ function parseImageData(){
             }
 
             rowContent.appendChild(item);
+
+            rowState.items.push(item);
+
+            rowState.items.push(item);
+
+            rowState.images.push(img);
+
+            rowState.urls.push(img.src);
 
             const dotIdx =
                 filename.lastIndexOf('.');
@@ -6348,7 +8629,7 @@ function parseImageData(){
 
         });
 
-        imageContainer.appendChild(rowContainer);
+        fragment.appendChild(rowContainer);
 
         if(!hasMaster && tokenedBaseIds.length > 0){
 
@@ -6451,6 +8732,8 @@ function parseImageData(){
 
     renderNextBatch();
 
+    imageContainer.appendChild(fragment);
+
 }
 
 function copyAllUrls(){
@@ -6460,11 +8743,8 @@ function copyAllUrls(){
     const imgs =
         document.querySelectorAll('#imageContainer img');
 
-    const urls = [];
-
-    imgs.forEach(img => {
-        urls.push(img.src);
-    });
+    const urls =
+        rowState.urls;
 
     navigator.clipboard.writeText(
         urls.join('\n')
@@ -6995,3 +9275,5 @@ document
 
 </body>
 </html>
+
+}
