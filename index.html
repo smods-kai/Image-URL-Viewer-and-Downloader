@@ -4724,10 +4724,18 @@ SUMMARY BAR
             .addEventListener('click', closePreview);
 
         document.getElementById('previewNextBtn')
-            .addEventListener('click', previewNext);
+            .addEventListener('click', function() {
+                if (currentGallery.length === 0) return;
+                currentIndex = (currentIndex + 1) % currentGallery.length;
+                smartNavigateToIndex(currentIndex);
+            });
 
         document.getElementById('previewPrevBtn')
-            .addEventListener('click', previewPrev);
+            .addEventListener('click', function() {
+                if (currentGallery.length === 0) return;
+                currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+                smartNavigateToIndex(currentIndex);
+            });
 
         document.getElementById('previewModal')
             .addEventListener('click', function (e) {
@@ -4784,6 +4792,9 @@ SUMMARY BAR
         let enlargedBatchIndex = 0;
 
         let previewUsingEnlarged = false;
+
+        // Track which URLs have been enlarged in this session
+        let enlargedUrlsMap = Object.create(null);
 
         /*
         ==========================================================
@@ -4961,6 +4972,7 @@ SUMMARY BAR
             enlargeOriginalUrl = null;
             enlargedBlob = null;
             enlargedFilename = '';
+            enlargedUrlsMap = Object.create(null);
 
             document.getElementById('previewUndoEnlargeBtn').disabled = true;
             document.getElementById('previewDownloadEnlargedBtn').disabled = true;
@@ -5023,13 +5035,25 @@ SUMMARY BAR
 
                     for (const imageUrl of urls) {
 
-                        const blob =
-                            await canvasPadImageBlob(
-                                imageUrl,
-                                targetW,
-                                targetH,
-                                marginPx
-                            );
+                        // Check if we already have an enlarged version cached
+                        let blob = null;
+                        const cacheKey = imageUrl + '_' + targetW + 'x' + targetH + '_' + marginPx;
+
+                        if (enlargedUrlsMap[cacheKey]) {
+                            // Reuse cached blob
+                            blob = enlargedUrlsMap[cacheKey];
+                        } else {
+                            blob =
+                                await canvasPadImageBlob(
+                                    imageUrl,
+                                    targetW,
+                                    targetH,
+                                    marginPx
+                                );
+
+                            // Cache the result for future use
+                            enlargedUrlsMap[cacheKey] = blob;
+                        }
 
                         enlargedResults.push({
 
@@ -5125,6 +5149,55 @@ SUMMARY BAR
                 setEnlargeStatus('Reverted to original size — adjust the values and enlarge again anytime.');
 
             });
+
+        // Smart navigation: when moving to next/prev image, check if it's already been enlarged
+        function smartNavigateToIndex(newIndex) {
+            if (currentGallery.length === 0) return;
+
+            currentIndex = newIndex;
+
+            const url = currentGallery[currentIndex];
+
+            // Check if this image has already been enlarged with current settings
+            const targetW = parseInt(document.getElementById('enlargeWidth').value, 10) || 1500;
+            const targetH = parseInt(document.getElementById('enlargeHeight').value, 10) || 1500;
+            const marginIn = parseFloat(document.getElementById('enlargeMarginIn').value) || 0;
+            const dpi = parseInt(document.getElementById('enlargeDpi').value, 10) || 96;
+            const marginPx = marginIn * dpi;
+
+            const cacheKey = url + '_' + targetW + 'x' + targetH + '_' + marginPx;
+
+            if (enlargedUrlsMap[cacheKey] && previewUsingEnlarged) {
+                // Show cached enlarged version immediately
+                const objectUrl = URL.createObjectURL(enlargedUrlsMap[cacheKey]);
+                document.getElementById('previewImage').src = objectUrl;
+                enlargedBlob = enlargedUrlsMap[cacheKey];
+                enlargedFilename = extractImageId(url).replace(/\.[^.]+$/, '') + '.JPG';
+                
+                // Update thumbnail selection state without full re-render
+                const thumbsContainer = document.getElementById('previewThumbnails');
+                const thumbs = thumbsContainer.querySelectorAll('.preview-thumb');
+                thumbs.forEach(function(thumb, i) {
+                    thumb.classList.remove('active-thumb');
+                    if (i === currentIndex) {
+                        thumb.classList.add('active-thumb');
+                    }
+                });
+            } else {
+                // Show original
+                document.getElementById('previewImage').src = url;
+                
+                // Just update thumbnails without full re-render to preserve enlarge selection state
+                const thumbsContainer = document.getElementById('previewThumbnails');
+                const thumbs = thumbsContainer.querySelectorAll('.preview-thumb');
+                thumbs.forEach(function(thumb, i) {
+                    thumb.classList.remove('active-thumb');
+                    if (i === currentIndex) {
+                        thumb.classList.add('active-thumb');
+                    }
+                });
+            }
+        }
 
         /* =======================================================
         WORKSPACE UI
@@ -5805,11 +5878,15 @@ SUMMARY BAR
                     }
 
                     if (e.key === 'ArrowRight') {
-                        previewNext();
+                        if (currentGallery.length === 0) return;
+                        currentIndex = (currentIndex + 1) % currentGallery.length;
+                        smartNavigateToIndex(currentIndex);
                     }
 
                     if (e.key === 'ArrowLeft') {
-                        previewPrev();
+                        if (currentGallery.length === 0) return;
+                        currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length;
+                        smartNavigateToIndex(currentIndex);
                     }
 
                 });
