@@ -8441,15 +8441,11 @@ SUMMARY BAR
                             const img =
                                 document.createElement('img');
 
-                            const source =
-                                    proxyUrl ||
-                                    objectURL ||
-                                    url ||
-                                    "";
+                            img.loading = "lazy";
 
-                                img.loading = "lazy";
-                                img.decoding = "async";
-                                img.src = source;
+                            img.decoding = "async";
+
+                            img.src = url;
 
                                 item.dataset.url = url;
 
