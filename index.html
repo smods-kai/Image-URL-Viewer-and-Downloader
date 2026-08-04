@@ -3123,6 +3123,11 @@ SUMMARY BAR
                     </div>
 
                     <div class="preview-enlarge-row">
+                        <button id="previewExpandExactlyBtn" class="preview-enlarge-btn preview-enlarge-btn--accent"
+                            style="width:100%;background:#45b97c;border-color:#45b97c;">&#9733; Expand Images Exactly</button>
+                    </div>
+
+                    <div class="preview-enlarge-row">
 
                         <div id="enlargeSelectionStatus" style="
             width:100%;
@@ -4976,6 +4981,7 @@ SUMMARY BAR
 
             document.getElementById('previewUndoEnlargeBtn').disabled = true;
             document.getElementById('previewDownloadEnlargedBtn').disabled = true;
+            document.getElementById('previewExpandExactlyBtn').disabled = false;
 
             setEnlargeStatus('');
 
@@ -5108,6 +5114,10 @@ SUMMARY BAR
                         'previewDownloadEnlargedBtn'
                     ).disabled = false;
 
+                    document.getElementById(
+                        'previewExpandExactlyBtn'
+                    ).disabled = true;
+
                     setEnlargeStatus(
 
                         enlargedResults.length
@@ -5145,6 +5155,7 @@ SUMMARY BAR
 
                 document.getElementById('previewUndoEnlargeBtn').disabled = true;
                 document.getElementById('previewDownloadEnlargedBtn').disabled = true;
+                document.getElementById('previewExpandExactlyBtn').disabled = false;
 
                 setEnlargeStatus('Reverted to original size — adjust the values and enlarge again anytime.');
 
@@ -5718,6 +5729,150 @@ SUMMARY BAR
                         URL.revokeObjectURL(objectUrl);
 
                         setEnlargeStatus('Downloaded ' + enlargedFilename);
+
+                    });
+
+                // Expand Images Exactly - Smart Resize for all images in current set
+                document.getElementById('previewExpandExactlyBtn')
+                    .addEventListener('click', async function () {
+
+                        if (currentGallery.length === 0) {
+                            setEnlargeStatus('No images to expand.');
+                            return;
+                        }
+
+                        const targetW =
+                            parseInt(document.getElementById('enlargeWidth').value, 10) || 1500;
+
+                        const targetH =
+                            parseInt(document.getElementById('enlargeHeight').value, 10) || 1500;
+
+                        const marginIn =
+                            parseFloat(document.getElementById('enlargeMarginIn').value) || 0;
+
+                        const dpi =
+                            parseInt(document.getElementById('enlargeDpi').value, 10) || 96;
+
+                        const marginPx =
+                            marginIn * dpi;
+
+                        if (marginPx * 2 >= Math.min(targetW, targetH)) {
+                            setEnlargeStatus('Margin is too large for that canvas size — reduce the margin or increase width/height.');
+                            return;
+                        }
+
+                        setEnlargeStatus('Smart Resizing all ' + currentGallery.length + ' images...');
+
+                        try {
+
+                            const enlargedResults = [];
+
+                            for (let i = 0; i < currentGallery.length; i++) {
+
+                                const imageUrl = currentGallery[i];
+
+                                // Check if we already have an enlarged version cached
+                                let blob = null;
+                                const cacheKey = imageUrl + '_' + targetW + 'x' + targetH + '_' + marginPx;
+
+                                if (enlargedUrlsMap[cacheKey]) {
+                                    // Reuse cached blob
+                                    blob = enlargedUrlsMap[cacheKey];
+                                } else {
+                                    blob =
+                                        await canvasPadImageBlob(
+                                            imageUrl,
+                                            targetW,
+                                            targetH,
+                                            marginPx
+                                        );
+
+                                    // Cache the result for future use
+                                    enlargedUrlsMap[cacheKey] = blob;
+                                }
+
+                                enlargedResults.push({
+
+                                    url: imageUrl,
+
+                                    blob: blob,
+
+                                    filename:
+                                        extractImageId(imageUrl)
+                                            .replace(/\.[^.]+$/, '')
+                                        + '.JPG'
+
+                                });
+
+                            }
+
+                            const url = currentGallery[currentIndex];
+
+                            if (!enlargeOriginalUrl) {
+                                enlargeOriginalUrl = url;
+                            }
+
+                            enlargedBlob =
+                                enlargedResults[0].blob;
+
+                            enlargedFilename =
+                                enlargedResults[0].filename;
+
+                            const objectUrl =
+                                URL.createObjectURL(
+                                    enlargedResults[0].blob
+                                );
+
+                            document.getElementById('previewImage').src =
+                                objectUrl;
+
+                            window.enlargedBatch = enlargedResults;
+
+                            saveProcessedSet(enlargedResults);
+
+                            refreshWorkspaceUI();
+
+                            enlargedBatch = enlargedResults;
+
+                            enlargedBatchIndex = 0;
+
+                            previewUsingEnlarged = true;
+
+                            document.getElementById(
+                                'previewUndoEnlargeBtn'
+                            ).disabled = false;
+
+                            document.getElementById(
+                                'previewDownloadEnlargedBtn'
+                            ).disabled = false;
+
+                            document.getElementById(
+                                'previewExpandExactlyBtn'
+                            ).disabled = true;
+
+                            setEnlargeStatus(
+
+                                enlargedResults.length
+
+                                + ' image(s) smart resized. '
+
+                                + 'Workspace: '
+
+                                + window.processedWorkspace.processedCount
+
+                                + ' set(s) ready.'
+
+                            );
+
+                        } catch (e) {
+
+                            console.error(e);
+
+                            setEnlargeStatus(
+                                'Couldn\'t resize one or more images.'
+                            );
+
+                        }
 
                     });
 
