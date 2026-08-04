@@ -8218,11 +8218,7 @@ SUMMARY BAR
 
                         const rowState = {
 
-                            items: [],
-
-                            images: [],
-
-                            urls: []
+                            items: []
 
                         };
 
@@ -8320,11 +8316,13 @@ SUMMARY BAR
 
                         copySetBtn.addEventListener('click', function () {
 
-                            const urls = rowState.urls;
+                        const urls = Array.from(
+                            rowContainer.querySelectorAll('.image-item img')
+                        ).map(img => img.src);
 
-                            navigator.clipboard.writeText(
-                                urls.join('\n')
-                            );
+                        navigator.clipboard.writeText(
+                            urls.join('\n')
+                        );
 
                             window.postMessage({
                                 type: "KP360_URL_MEMORY",
@@ -8443,17 +8441,17 @@ SUMMARY BAR
                             const img =
                                 document.createElement('img');
 
-                            img.src = url;
+                            const source =
+                                    proxyUrl ||
+                                    objectURL ||
+                                    url ||
+                                    "";
 
-                            rowState.images.push(img);
+                                img.loading = "lazy";
+                                img.decoding = "async";
+                                img.src = source;
 
-                            rowState.urls.push(url);
-
-                            item.dataset.url = url;
-
-                            img.loading = "lazy";
-
-                            img.decoding = "async";
+                                item.dataset.url = url;
 
                             if ("fetchPriority" in img) {
 
@@ -8593,10 +8591,6 @@ SUMMARY BAR
                             rowState.items.push(item);
 
                             rowState.items.push(item);
-
-                            rowState.images.push(img);
-
-                            rowState.urls.push(img.src);
 
                             const dotIdx =
                                 filename.lastIndexOf('.');
